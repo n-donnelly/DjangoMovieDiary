@@ -1,0 +1,148 @@
+html {
+    font-family: "ubuntu", sans-serif;
+}
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100% !important;
+}
+
+body {
+	min-width: 320px;
+}
+
+#wrapper {
+	min-height: 100%;
+	position: relative;
+    max-width: 1170px;
+    margin: 0 auto;
+}
+
+#header_container {
+    height: 80px;
+}
+
+#body_container {
+	padding-bottom: 57px;
+    overflow: auto;
+    width: 100%;
+}
+
+#footer_container {
+	width: 100%;
+	height: 57px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+#header_left {
+    float: left;
+}
+
+#header_right {
+    float: right;
+    line-height: 80px;
+}
+
+#header_right span {
+    padding: 0 0 0 15px;
+}
+
+#searchbar {
+    width: 100%;
+    height: 35px;
+    display: flex;
+}
+
+#title_search_txt {
+    width: 70%;
+    flex-grow: 1;
+    padding: 5px;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid #999;
+    border-right: 0;
+}
+
+#title_search_txt {
+	outline: none;
+}
+
+#title_search_btn {
+    line-height: 35px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 0 5px 5px 0;
+}
+
+.button {
+    width: 125px;
+    text-align: center;
+    background-color: #F9F9F9;
+    border: 1px solid #999;
+    color: #888;
+}
+
+#movies_list {
+    padding-left: 0;
+}
+
+#movies_list li {
+    text-decoration: none;
+    display: block;
+    clear: both;
+    overflow: auto;
+    padding: 10px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+#movies_list .movie_image {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+    height: 240px;
+    width:160px;
+    background-color: #F1F1F1;
+}
+
+#movies_list .movie_image img{
+	height: 100%;
+	width: 100%;
+}
+
+#movies_list .movie_deets {
+    display: block;
+    float: left;
+    margin-left: 165px;
+    min-height: 245px;
+}
+
+#movie_list #chosen_movie {
+	
+}
+
+#movies_list .movie_deets span:first-of-type{
+	font-size: 25px;
+	font-weight: 500;
+}
+
+#movies_list .movie_deets #movie_info span:first-of-type{
+	font-size: 16px;
+	font-weight: inherit;
+}
+
+#movies_list li span {
+    display: block;
+    padding: 5px;
+}
+
+#movies_list li::after {
+	content: "";
+	border-bottom: 1px solid #D7D7D7;
+	display: block; 
+}
+
+.clear {
+    clear: both;
+}
