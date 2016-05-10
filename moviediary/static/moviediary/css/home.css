@@ -73,6 +73,11 @@ body {
     text-decoration: none;
     text-transform: uppercase;
     border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+#title_search_btn:hover {
+	background-color: #000;
 }
 
 .button {
@@ -145,4 +150,24 @@ body {
 
 .clear {
     clear: both;
+}
+
+#body_container form .field {
+	margin-bottom: 8px;
+}
+
+#body_container form .field label {
+	display: inline-block;
+	width: 10%;
+}
+
+#body_container form #login_btn {
+	
+}
+
+
+form p.error {
+	color:red;
+	display:inline-block;
+	margin-left: 3%;
 }

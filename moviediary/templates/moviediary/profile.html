@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block css %}
+{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'moviediary/css/profile.css' %}">
+{% endblock %}
+{% block title %}{{request.user.username}}'s Profile{% endblock %}
+{% block content %}
+	<div id="wrapper">
+		<div id="header_container">
+		    <div id="header_left">
+		        <h1>{{request.user.username}}'s Profile</h1>
+		    </div>
+		    <div id="header_right">
+		        <span><a href="/moviediary/">Homepage</a></span>
+		    </div>
+		    <div class="clear"></div>
+		</div>
+		<div id="body_container">
+			{% load staticfiles %}
+			<div id="profile_image">
+				<img src='{% static "moviediary/images/profile.jpg" %}' alt="Profile Pic">
+			</div>
+			
+			<div id="user_area">
+				<div class="label_field_div">
+					<span class="span_label">Email:</span>
+					<span class="span_field">{{request.user.email}}</span>
+				</div>
+				
+				{% if reviewer.bio and reviewer.bio.strip %}
+				<div class="label_field_div">
+					<span class="span_label">Bio:</span>
+					<span class="span_field">{{reviewer.bio}}</span>
+				</div>
+				{% endif %}
+				
+				{% if reviewer.love_movie_text and reviewer.love_movie_text.strip %}
+				<div class="label_field_div">
+					<span class="span_label">Why I Love Movies:</span>
+					<span class="span_field">{{reviewer.love_movie_text}}</span>
+				</div>
+				{% endif %}
+				
+				<div class="label_field_div">
+					<span class="span_label">Number of Reviews:</span>
+					<span class="span_field">{{reviewer.num_of_reviews}}</span>
+				</div>
+			</div>
+			
+			<div id="wishlist_area" class="larger_area">
+				{% for movie in wishlist.wish_movies.all %}
+					<div class="movie_view">
+						movie.title
+					</div>
+				{% endfor %}
+			</div>
+			
+			<div id="review_area" class="larger_area">
+				{% for review in reviews %}
+					<div class="review_view">
+						review.movie.title
+					</div>
+				{% endfor %}
+			</div>
+			
+			<div id="following_revs_area" class="larger_area">
+				{% for review in follow_reviews %}
+					<div class="review_view">
+						review.movie.title
+					</div>
+				{% endfor %}			
+			</div>
+			
+		</div>
+	</div>
+{% endblock %}

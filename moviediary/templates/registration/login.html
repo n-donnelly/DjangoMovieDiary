@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+	<div id="wrapper">
+            <div id="header_container">
+                <div id="header_left">
+                    <h1>Roger Mebert</h1>
+                </div>
+                <div id="header_right">
+                    <span> Links Here</span>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div id="body_container">
+              <h2>Sign In</h2>
+			  <form id="login" action="" method="post">{% csrf_token %}
+			  	<div class="field">
+			    	<label for="username">User name:</label>
+			    	<input type="text" name="username" value="" id="username">
+			    </div>
+			    <div class="field">
+			    	<label for="password">Password:</label>
+			    	<input type="password" name="password" value="" id="password">
+				</div>
+			    <input id="login_btn" type="submit" value="Login" />
+			    {% if form.errors %}
+				    <p class="error">Sorry, that's not a valid username or password</p>
+				  {% endif %}
+			    <input type="hidden" name="next" value="/moviediary/profile/" />
+			  </form>
+			  
+			  <h2>Create Account</h2>
+			  <form id="register" action="/moviediary/accounts/register/" method="post">{% csrf_token %}
+			  	<div class="field">
+			    	<label for="username">User name:</label>
+			    	<input type="text" name="username" value="" id="username">
+			    </div>
+				<div class="field">
+			    	<label for="email">Email:</label>
+			    	<input type="email" name="email" value="" id="email">
+				</div>
+			    <div class="field">
+			    	<label for="password">Password:</label>
+			    	<input type="password" name="password" value="" id="password">
+				</div>
+			    <input id="login_btn" type="submit" value="Create Account" />
+			    <p class="error">{{ reg_error }}</p>
+			  </form>
+			</div>
+	</div>
+
+{% endblock %}

@@ -1,6 +1,33 @@
 var current_movie_list;
 var monthNames = ["January", "February", "March", "April", "May", "June",
                   "July", "August", "September", "October", "November", "December"];
+var rtn_tom_page_limit = "page_limit=";
+var pg_limit = 10;
+var query = "";
+
+$("#title_search_btn").on("click", searchMovieTitle);
+
+$('#title_search_txt').keydown(function(event){
+	if ( event.which == 13 ) {
+	   event.preventDefault();
+	   searchMovieTitle();
+	}
+})
+
+function loadResults(data){
+	createResultsString(data, function(results){
+		$("#movies_list").append(results);
+	});
+}
+
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
 function createResultsString(data, finished_callback) {
 	var testQuery = query;
 	current_movie_list = data.results;

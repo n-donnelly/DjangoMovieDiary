@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+{% load staticfiles %}
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% block css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'moviediary/css/home.css' %}">
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu:400,500,700' rel='stylesheet' type='text/css'>
+</head>
+<body>
+	{% block content %}{% endblock %}
+    {% block footer %}
+    <hr>
+    {% endblock %}
+</body>
+
+
+  <script src="{% static 'moviediary/js/jquery.js' %}"></script>  
+  {% block scripts %}{% endblock %}
+  <script src="{% static 'moviediary/js/home.js' %}"></script>
+</html>

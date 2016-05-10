@@ -1,0 +1,28 @@
+#profile_image {
+	display:inline-block;
+	width: 25%;
+	height: auto;
+	float:left;
+	margin-right:5%;
+}
+
+#profile_image img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+#user_area {
+	display:inline-block;
+}
+
+.label_field_div {
+	margin-bottom: 6px;
+}
+
+.span_label {
+	font-weight: bold;
+}
+
+.larger_area {
+	background-color:grey;
+}
