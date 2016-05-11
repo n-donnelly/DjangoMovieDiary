@@ -6,7 +6,15 @@
     <title>{% block title %}{% endblock %}</title>
     {% block css %}{% endblock %}
     <link rel="stylesheet" href="{% static 'moviediary/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'moviediary/css/jquery-ui.css' %}">
     <link href='https://fonts.googleapis.com/css?family=Ubuntu:400,500,700' rel='stylesheet' type='text/css'>
+    <script src="{% static 'moviediary/js/jquery.js' %}"></script> 
+ 	<script src="{% static 'moviediary/js/jquery-ui.js' %}"></script>
+ 	<script>
+ 	$(function() {
+        $( "#datepicker" ).datepicker();
+    });
+ 	</script>  
 </head>
 <body>
 	{% block content %}{% endblock %}
@@ -14,9 +22,7 @@
     <hr>
     {% endblock %}
 </body>
-
-
-  <script src="{% static 'moviediary/js/jquery.js' %}"></script>  
+  
   {% block scripts %}{% endblock %}
   <script src="{% static 'moviediary/js/home.js' %}"></script>
 </html>

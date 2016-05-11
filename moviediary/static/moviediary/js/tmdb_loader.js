@@ -4,6 +4,7 @@ var monthNames = ["January", "February", "March", "April", "May", "June",
 var rtn_tom_page_limit = "page_limit=";
 var pg_limit = 10;
 var query = "";
+var is_user_auth = "{{% user.is_authenticated %}}"
 
 $("#title_search_btn").on("click", searchMovieTitle);
 
@@ -17,6 +18,14 @@ $('#title_search_txt').keydown(function(event){
 function loadResults(data){
 	createResultsString(data, function(results){
 		$("#movies_list").append(results);
+		$(".review_btn").on("click", function(event){
+			//$(event.target).parent().load("review_form")
+			$.get("review_form", function(data) {
+				$(data).appendTo($(event.target).parent());
+				$("#datepicker").datepicker();
+				//$("#datepicker").datepicker("option", "showAnim", "slideDown");
+			})
+		})
 	});
 }
 
@@ -69,13 +78,19 @@ function searchMovieTitle() {
 
 function buildItem(movie, index) {
 	
-	var builtStr = "<li id='movie_" + index + "'><div class='movie_image'>";
+	var builtStr = "<li id='movie_" + index + "'><div><div class='movie_image'>";
 	builtStr += getImageUrl(movie);
 	builtStr += "</div><div class='movie_deets'>";
 	var arr = {'Title' : movie.title,
 			'Year' : getDateString(new Date(movie.release_date)),
 			'Overview' : movie.overview}
-	builtStr += buildString(arr) + '</div></li>';
+	builtStr += buildString(arr) + '</div>';
+	
+	if (is_user_auth) {
+		builtStr += "<a class='review_btn'>Review this Movie</a>";
+	} 
+	
+	builtStr += "</div></li>"
 	return builtStr;
 }
 

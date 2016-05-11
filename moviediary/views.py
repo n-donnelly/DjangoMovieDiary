@@ -44,7 +44,7 @@ def register(request):
                                     password = password)
     
     op_signup(user)
-    return render(request, 'moviediary/profile.html')
+    return render(request, 'moviediary/profile.html .movie_form')
 
 #TODO: Decide whether to take these out and move them to AJAX responses to reduce the 
 #up front load cost of all these DB queries - okay for now but won't scale particularly well
@@ -52,7 +52,6 @@ def register(request):
 def profile(request):
     context = {}
     
-    print(request.user)
     reviewer = get_object_or_404(Reviewer, user=request.user)
     context['reviewer'] = reviewer
     
@@ -71,3 +70,6 @@ def profile(request):
         return render(request, 'moviediary/profile.html', context)
     else:
         return render(request, 'registration/login.html')
+    
+def review_form(request):
+    return render(request, 'moviediary/review_form.html')

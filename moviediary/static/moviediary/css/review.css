@@ -1,0 +1,8 @@
+#movies_list li .movie_form div#date_area span.span_label {
+	display:inline-block;
+	font-weight:bold;
+}
+
+#movies_list li .movie_form div#date_area #cal_picker {
+	display:inline-block;
+}

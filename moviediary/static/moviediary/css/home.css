@@ -103,12 +103,11 @@ body {
 }
 
 #movies_list .movie_image {
-	position: absolute;
-	top: 10px;
-	left: 10px;
-    height: 240px;
-    width:160px;
-    background-color: #F1F1F1;
+	float:left;
+	width:20%;
+	height:auto;
+	display:inline-block;
+	margin-right:1%;
 }
 
 #movies_list .movie_image img{
@@ -117,10 +116,9 @@ body {
 }
 
 #movies_list .movie_deets {
-    display: block;
+    display: inline-block;
     float: left;
-    margin-left: 165px;
-    min-height: 245px;
+    width:70%;
 }
 
 #movie_list #chosen_movie {
@@ -135,6 +133,11 @@ body {
 #movies_list .movie_deets #movie_info span:first-of-type{
 	font-size: 16px;
 	font-weight: inherit;
+}
+
+#movies_list li {
+	background-color:#b3b3b3;
+	border-radius:16px;
 }
 
 #movies_list li span {
@@ -170,4 +173,17 @@ form p.error {
 	color:red;
 	display:inline-block;
 	margin-left: 3%;
+}
+
+a.review_btn {
+	position:absolute;
+	bottom:10px;
+	right:20px;
+	text-decoration:underline;
+	color:blue;
+}
+
+a.review_btn:hover {
+	color:rgb(160, 32, 240);
+	cursor:pointer;
 }
