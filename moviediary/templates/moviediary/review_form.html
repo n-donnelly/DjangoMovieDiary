@@ -6,7 +6,26 @@
 {% endblock %}
 {% block content %}
 <form class="movie_form"> {% csrf_token %}
-	<fieldset class="rate stars_rating">
+	<div id="headline_area">
+		<span class="span_label">Review Headline</span>
+		<input type="text" id="headline" name="headline" size="32" maxlength="120">
+	</div>
+	
+	<div id="review_text_area">
+		<div id="label_div">
+			<span class="span_label">Your Review</span>
+		</div>
+		<div id="review_area_div">
+			<textarea rows="8" name="review_text" cols="72" maxlength="1000"></textarea>
+		</div>
+	</div>
+	
+	<div id="date_area">
+		<span class="span_label">When did you see it?</span>
+		<input type="text" id="datepicker" name="review_date">
+	</div>
+
+	<fieldset class="rate stars_rating" name="rating">
 	    <input type="radio" id="rating10" name="rating" value="10" /><label for="rating10" title="5 stars"></label>
 	    <input type="radio" id="rating9" name="rating" value="9" /><label class="half" for="rating9" title="4 1/2 stars"></label>
 	    <input type="radio" id="rating8" name="rating" value="8" /><label for="rating8" title="4 stars"></label>
@@ -19,9 +38,11 @@
 	    <input type="radio" id="rating1" name="rating" value="1" /><label class="half" for="rating1" title="1/2 star"></label>
 	</fieldset>
 	
-	<div id="date_area">
-		<span class="span_label">When did you see it?</span>
-		<input type="text" id="datepicker">
-	</div>
+	<div id="form_btn">Submit Review</div>
+	
+	<input type="hidden" id="movie_title" name="movie_title">
+	<input type="hidden" id="movie_id" name="movie_id">
+	<input type="hidden" id="poster_url" name="poster_url">
+	<input type="hidden" id="release_date" name="release_date">
 </form>
 {% endblock %}

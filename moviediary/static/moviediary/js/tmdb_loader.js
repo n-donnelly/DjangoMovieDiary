@@ -18,15 +18,41 @@ $('#title_search_txt').keydown(function(event){
 function loadResults(data){
 	createResultsString(data, function(results){
 		$("#movies_list").append(results);
-		$(".review_btn").on("click", function(event){
-			//$(event.target).parent().load("review_form")
-			$.get("review_form", function(data) {
-				$(data).appendTo($(event.target).parent());
-				$("#datepicker").datepicker();
-				//$("#datepicker").datepicker("option", "showAnim", "slideDown");
-			})
-		})
+		$(".review_btn").on("click", loadForm)
 	});
+}
+
+function loadForm(event) {
+	$.get("review_form", function(data) {
+		$(event.target).html("Nevermind");
+		$(event.target).off("click");
+		$(event.target).on("click", hideForm);
+		$(event.target).parent().find(".movie_form").remove();
+		$(data).appendTo($(event.target).parent());
+
+		var form = $(event.target).parent().find(".movie_form");
+		form.submit(submitFormAJAX);
+		form.find("#form_btn").on("click", onSubmitClicked);
+		$("#datepicker").datepicker();
+		
+		var movie_id = $(event.target).parent().parent().attr('id').split('_')[1];
+		
+		form.find("#movie_title").val(current_movie_list[movie_id].title);
+		form.find("#movie_id").val(current_movie_list[movie_id].id);
+		form.find("#poster_url").val(current_movie_list[movie_id].poster_path);
+		form.find("#release_date").val(current_movie_list[movie_id].release_date);
+		
+		//$(event.target).parent().find(".movie_form").hide().slideDown(1000);
+	})
+	
+}
+
+function hideForm(event) {
+	var form = $(event.target).parent().find(".movie_form");
+	form.remove();
+	$(event.target).off("click");
+	$(event.target).on("click", loadForm);
+	$(event.target).html("Review this Movie");
 }
 
 Object.size = function(obj) {
@@ -74,6 +100,10 @@ function searchMovieTitle() {
 				include_adult: true
 			},
 			loadResults)
+}
+
+function getMovieInfo() {
+	
 }
 
 function buildItem(movie, index) {

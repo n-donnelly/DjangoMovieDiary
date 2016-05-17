@@ -5,7 +5,8 @@ Created on 2 Apr 2016
 '''
 import uuid
 
-from moviediary.db_operations import getMovieWithTMDB_Id, getUserReviewForMovie
+from moviediary.db_operations import getMovieWithTMDB_Id, getUserReviewForMovie,\
+    removeWishlist
 from moviediary.models import Reviewer, Movie, Review
 
 #function to set up user on DB        
@@ -26,7 +27,7 @@ def op_signup(user):
 #create a movie instance for the DB
 def op_addMovie(title, release, tmdb_id, tagline, im_url):
     if getMovieWithTMDB_Id(tmdb_id) is not None:
-        return "movie with that ID already exists"
+        return 0
     m = Movie.objects.create(title=title, 
                              release_date=release, 
                              ext_id=tmdb_id,
@@ -36,10 +37,10 @@ def op_addMovie(title, release, tmdb_id, tagline, im_url):
     return m
 
 #create a review for a movie from given reviewer, update reviewer and movie
-def op_addReview(reviewer, movie, review_text, review_date, score):
+def op_addReview(reviewer, movie, review_text, review_date, score, headline):
     #check if the user has already written a review for this Movie
     if getUserReviewForMovie(movie, reviewer) is not None:
-        return "User has already reviewed this movie"
+        return "Error:Failed to add review"
     
     #Update user's number of reviews
     reviewer.num_of_reviews+=1
@@ -55,8 +56,11 @@ def op_addReview(reviewer, movie, review_text, review_date, score):
                               reviwer=reviewer,
                               movie=movie,
                               review_text=review_text,
-                              review_date=review_date)
+                              review_date=review_date,
+                              review_headline=headline)
     
-    return r;
+    return r;    
     
-    
+#delete the movie from the user's wishlist
+def op_removeMovieFromWishlist(movie, reviewer):
+    removeWishlist(reviewer, movie)

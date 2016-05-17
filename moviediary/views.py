@@ -2,7 +2,9 @@
 import re
 
 from django.contrib.auth.models import User
+from django.core import serializers
 from django.http import HttpResponse
+from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.context import Context
 from django.utils.html import strip_tags
@@ -11,7 +13,8 @@ from moviediary.db_operations import getWishlistMovies, getReviewsForUser, \
     getCountOfFollowersForUser, getCountOfFollowedsForUser, \
     getReviewsFromFollowed
 from moviediary.models import Reviewer
-from moviediary.operations import op_signup
+from moviediary.operations import op_signup, op_addMovie, \
+    op_removeMovieFromWishlist, op_addReview
 
 
 # Create your views here.
@@ -73,3 +76,45 @@ def profile(request):
     
 def review_form(request):
     return render(request, 'moviediary/review_form.html')
+
+#Add movie to DB if not there
+#Remove movie from user's wishlist
+#Add review for movie and user
+def review_submit(request):
+    if request.user.is_authenticated():
+        errors = {}
+        errors['error'] = []
+        if request.method == 'POST' and request.is_ajax():
+            if not request.POST.get('headline'):
+                errors['error'].append('Needs a headline')
+            if not request.POST.get('review_text'):
+                errors['error'].append('You need to write a review')
+            if not request.POST.get('review_date'):
+                errors['error'].append('Please give a date')
+            if not request.POST.get('rating'):
+                errors['error'].append('We need a rating')
+            if not errors['error']:
+                headline = request.POST.get('headline')
+                review_text = request.POST.get('review_text')
+                review_date = request.POST.get('review_date')
+                rating = request.POST.get('rating')
+                movie_title = request.POST.get('movie_title')
+                movie_id = request.POST.get('movie_id')
+                poster_url = request.POST.get('poster_url')
+                release_date = request.POST.get('release_date')
+                reviewer = get_object_or_404(Reviewer, user=request.user)
+                
+                m = op_addMovie(movie_title,release_date,movie_id, '', poster_url)
+                if m is 0:
+                    op_removeMovieFromWishlist(m, reviewer)
+                    
+                r = op_addReview(reviewer, m, review_text, review_date, rating, headline)
+                
+                if r.startswith('Error'):
+                    return JsonResponse({"review_status":r})
+                else:
+                    return JsonResponse({"review_status":"success"});
+        errors['review_status'] = 'There were errors'
+        return JsonResponse(errors)
+    else:
+        return render(request, 'registration/login.html')

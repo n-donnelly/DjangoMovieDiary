@@ -118,7 +118,7 @@ body {
 #movies_list .movie_deets {
     display: inline-block;
     float: left;
-    width:70%;
+    width:75%;
 }
 
 #movie_list #chosen_movie {

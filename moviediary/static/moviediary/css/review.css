@@ -1,8 +1,44 @@
-#movies_list li .movie_form div#date_area span.span_label {
+#movies_list li .movie_form div span.span_label {
 	display:inline-block;
 	font-weight:bold;
+	width: 10em;
 }
 
-#movies_list li .movie_form div#date_area #cal_picker {
+#movies_list li .movie_form div #cal_picker {
 	display:inline-block;
+}
+
+.movie_form {
+	float:left;
+	margin-top:40px;
+	margin-bottom:20px;
+}
+
+.rate {
+	display:inline-block;
+	float:right;
+}
+
+#movies_list li .movie_form div#date_area {
+	display:inline-block;
+}
+
+.movie_form #review_text_area textarea {
+	height:100px;
+	
+}
+.movie_form #form_btn {
+	background-color:grey;
+	border-radius:2px;
+	width:8em;
+	text-align:center;
+	padding:2px;
+	float:right;
+	margin:8px;
+	clear:right;	
+}
+
+.movie_form #form_btn:hover {
+	background-color:white;
+	cursor:pointer;
 }

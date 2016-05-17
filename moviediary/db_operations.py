@@ -58,3 +58,7 @@ def getCountOfFollowersForUser(user):
 
 def getCountOfFollowedsForUser(user):
     return Following.objects.filter(follower=user).count()
+
+#remove wishlist that matches reviewer and Movie
+def removeWishlist(reviewer, movie):
+    return Wishlist.objects.filter(reviewer=reviewer).filter(movie=movie).delete()
