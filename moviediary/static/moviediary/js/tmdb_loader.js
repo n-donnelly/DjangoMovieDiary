@@ -18,7 +18,8 @@ $('#title_search_txt').keydown(function(event){
 function loadResults(data){
 	createResultsString(data, function(results){
 		$("#movies_list").append(results);
-		$(".review_btn").on("click", loadForm)
+		$(".movie_image").on("click", expandMovie);
+		$(".movie_deets").on("click", expandMovie);
 	});
 }
 
@@ -35,7 +36,7 @@ function loadForm(event) {
 		form.find("#form_btn").on("click", onSubmitClicked);
 		$("#datepicker").datepicker();
 		
-		var movie_id = $(event.target).parent().parent().attr('id').split('_')[1];
+		var movie_id = $(event.target).parent().parent().parent().attr('id').split('_')[1];
 		
 		form.find("#movie_title").val(current_movie_list[movie_id].title);
 		form.find("#movie_id").val(current_movie_list[movie_id].id);
@@ -74,21 +75,112 @@ function createResultsString(data, finished_callback) {
 	finished_callback(results_str)
 }
 
-function expandMovie(obj) {
-	var movie_index = obj['selector'].substring(7);
+function expandMovie(event) {
+	var movie_li = $(event.target).offsetParent();
+	var movie_index = movie_li.attr("id").split("_")[1];
 	var movie = current_movie_list[movie_index];
 	
-	tmdb.call('/movie/' + movie['id'],{},function(data) {
-		var detailsDiv = obj.children(".movie_deets");
-		detailsDiv.append(buildExtraDetailsString(data));
-	})
+	if(movie_li.find(".extra_deets").length)
+		movie_li.find(".extra_deets").show("slow");
+	else {
+		$.ajax({
+			type:'GET',
+			url:'get_movie_info/',
+			dataType:"json",
+			data:{
+				"movie_id":'"' + movie['id'] + '"'
+			},
+			success: function (data) {
+				buildMebertsExtraString(data);
+			}
+		})
+		
+		tmdb.call('/movie/' + movie['id'],
+			{
+				"append_to_response":"credits"
+			},
+			function(data) {
+				movie_li.children(":first").append(buildExtraDetailsString(data));
+				$(".review_btn").on("click", loadForm);
+				$(".wish_btn").on("click", addToWishlist);
+			})
+	}
+	
+	movie_li.find(".movie_image").off("click");
+	movie_li.find(".movie_deets").off("click");
+	movie_li.find(".movie_image").on("click", hideMovieExtras);
+	movie_li.find(".movie_deets").on("click", hideMovieExtras);
+}
+
+function hideMovieExtras(event) {
+	var movie_li = $(event.target).offsetParent();
+	movie_li.find(".extra_deets").hide("slow");
+	
+	movie_li.find(".movie_image").off("click");
+	movie_li.find(".movie_deets").off("click");
+	movie_li.find(".movie_image").on("click", expandMovie);
+	movie_li.find(".movie_deets").on("click", expandMovie);
+}
+
+function buildMebertsExtraString(info) {
+	
 }
 
 function buildExtraDetailsString(movie) {
-	extraStr = "<div id='extras'>";
+	extraStr = "<div class='extra_deets'><div class='tmdb_extras'>";
 	
+	var arr = {
+			'Tagline':movie.tagline,
+			'Runtime':movie.runtime,
+			'Genres':buildStringFromArr(movie.genres),
+			'Directors':buildDirectorString(movie.credits.crew),
+			'Writers':buildWritersString(movie.credits.crew),
+			'Cast':buildCastString(movie.credits.cast),
+			'Production':buildStringFromArr(movie.production_companies),
+			'TMDB Vote':movie.vote_average
+	}
+	extraStr += buildExtrasString(arr)
+	extraStr += "</div><div class='mebert_extras'></div>";
+	if (is_user_auth) {
+		extraStr += "<a class='review_btn movie_action_btn'>Review this Movie</a>";
+		extraStr += "<a class='wish_btn movie_action_btn'>Add to Wishlist</a>";
+	}
 	extraStr += "</div>";
 	return extraStr;
+}
+
+function buildCastString(cast){
+	var castString = "";
+	for(var i = 0; i < cast.length && i < 5; i++) {
+		castString += cast[i].name + "(" + cast[i].character + "), ";
+	}
+	return castString.substring(0, castString.length-2);
+}
+
+function buildDirectorString(crew){
+	var crewString = "";
+	for(var obj in crew) {
+		if(crew[obj].job == "Director")
+			crewString += crew[obj].name + ", ";
+	}
+	return crewString.substring(0, crewString.length-2);
+}
+
+function buildWritersString(crew){
+	var crewString = "";
+	for(var obj in crew) {
+		if(crew[obj].job == "Screenplay")
+			crewString += crew[obj].name + ", ";
+	}
+	return crewString.substring(0, crewString.length-2);
+}
+
+function buildStringFromArr(array){
+	var retString = "";
+	for(var obj in array){
+		retString += array[obj].name + ", ";
+	}
+	return retString.substring(0, retString.length-2);
 }
 
 function searchMovieTitle() {
@@ -102,13 +194,48 @@ function searchMovieTitle() {
 			loadResults)
 }
 
-function getMovieInfo() {
+function addToWishlist(event) {
+	var movie_id = $(event.target).parent().parent().parent().attr('id').split('_')[1];
 	
+	var wishlistArr = {};
+	
+	//Get the tagline from the span
+	var tagline = "";
+	var tagDiv = $(event.target).parent().find(".tmdb_extras .extras_div")[0];
+	var tagLabel = $(tagDiv).find(".extras_label");
+	if ($(tagLabel).html().startsWith("Tagline")) {
+		var tagSpan = $(tagDiv).find(".extras_val");
+		tagline = $(tagSpan).html();
+	}
+	
+	var title = current_movie_list[movie_id].title;
+	var release = current_movie_list[movie_id].release_date;
+	var mov_id = current_movie_list[movie_id].id;
+	var img_url = current_movie_list[movie_id].poster_path;
+	
+	wishlistArr['csrfmiddlewaretoken'] = Cookies.get('csrftoken');
+	wishlistArr['tagline'] = tagline;
+	wishlistArr['movie_title'] = title;
+	wishlistArr['release_date'] = release;
+	wishlistArr['movie_id'] = mov_id;
+	wishlistArr['poster_url'] = img_url;
+	
+	$.ajax({
+		type:'POST',
+		url:'add_movie_to_wishlist/',
+		data:wishlistArr,
+		success:function(data) {
+			$(event.target).html(data['wish_status']);
+		},
+		error: function(request, status, error) {
+			console.log("Something went wrong: " + request.responseText)
+		}
+	})
 }
 
 function buildItem(movie, index) {
 	
-	var builtStr = "<li id='movie_" + index + "'><div><div class='movie_image'>";
+	var builtStr = "<li id='movie_" + index + "'><div id='movie_info'><div class='movie_image'>";
 	builtStr += getImageUrl(movie);
 	builtStr += "</div><div class='movie_deets'>";
 	var arr = {'Title' : movie.title,
@@ -116,9 +243,9 @@ function buildItem(movie, index) {
 			'Overview' : movie.overview}
 	builtStr += buildString(arr) + '</div>';
 	
-	if (is_user_auth) {
+	/*if (is_user_auth) {
 		builtStr += "<a class='review_btn'>Review this Movie</a>";
-	} 
+	} */
 	
 	builtStr += "</div></li>"
 	return builtStr;
@@ -146,6 +273,23 @@ function buildString (elemArr) {
 				retStr += (i == Object.size(elemArr) - 1 ? endItem : midItem);
 			}
 			i++;
+		}
+	}
+	
+	return retStr;
+}
+
+function buildExtrasString (arr) {
+	var itemStart = "<div class='extras_div'><span class='extras_label'>";
+	var itemMid = "</span><span class='extras_val'>";
+	var itemEnd = "</span></div>";
+	
+	var retStr = "";
+	for (var lab in arr) {
+		if(arr.hasOwnProperty(lab)){
+			if(arr[lab] != "-1%" && arr[lab] != "" && arr[lab] != "null"){
+				retStr += itemStart + lab + ": " + itemMid + arr[lab] + itemEnd;
+			}
 		}
 	}
 	

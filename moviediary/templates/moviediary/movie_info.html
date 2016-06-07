@@ -1,0 +1,22 @@
+{% extends "toload_base.html" %}
+{% block content %}
+<div class='movie_info'>	
+	<div class="movie_image"></div>
+	<div class="movie_deets">
+		<span class="deets_title"></span>
+		<span class="deets_release"></span>
+		<span class="deets_overview"></span>
+	</div>
+	<div class="extra_deets" style="display: none">
+		<div class="tmdb_extras"></div>
+		<div class="mebert_extras"></div>
+		<div class="extras_div">
+			<span class="extras_label"></span>
+			<span class="extras_val"></span>
+		</div>
+		<a class="review_btn movie_action_btn">Review this Movie</a>
+		<a class="wish_btn movie_action_btn">Add to Wishlist</a>
+	</div>
+	<div class="my_movie_review" style="display: none"></div>
+</div>
+{% endblock %}

@@ -135,9 +135,11 @@ body {
 	font-weight: inherit;
 }
 
-#movies_list li {
-	background-color:#b3b3b3;
-	border-radius:16px;
+#movies_list .extra_deets {
+	float:left;
+	display:inline-block;
+	width:75%;
+	margin-top:12px;
 }
 
 #movies_list li span {
@@ -176,14 +178,32 @@ form p.error {
 }
 
 a.review_btn {
-	position:absolute;
 	bottom:10px;
-	right:20px;
+}
+
+a.wish_btn {	
+	top:28px;
+}
+
+a.movie_action_btn {
+	right:2em;
+	position:absolute;
 	text-decoration:underline;
 	color:blue;
 }
 
-a.review_btn:hover {
+a.movie_action_btn:hover {
 	color:rgb(160, 32, 240);
 	cursor:pointer;
+}
+
+#movies_list li #movie_info .extra_deets .extras_div .extras_label {
+	display:inline-block;
+	width:6em;
+	font-weight:bold;	
+}
+
+#movies_list li #movie_info .extra_deets .extras_div .extras_val {
+	display:inline-block;
+	width:80%
 }

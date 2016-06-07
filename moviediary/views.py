@@ -2,8 +2,7 @@
 import re
 
 from django.contrib.auth.models import User
-from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.context import Context
@@ -14,7 +13,8 @@ from moviediary.db_operations import getWishlistMovies, getReviewsForUser, \
     getReviewsFromFollowed
 from moviediary.models import Reviewer
 from moviediary.operations import op_signup, op_addMovie, \
-    op_removeMovieFromWishlist, op_addReview
+    op_removeMovieFromWishlist, op_addReview, op_addMovieToWishlist, op_getMovie, \
+    op_getReview, op_isMovieWishlisted, op_fillTestData
 
 
 # Create your views here.
@@ -40,7 +40,7 @@ def register(request):
        User.objects.filter(username=username).exists() or
        User.objects.filter(email=email).exists()):
         context = Context({"error": "User already exists"})
-        return render(request, 'registration/login.html')
+        return render(request, 'registration/login.html', context)
         
     user = User.objects.create_user(username=username,
                                     email=email,
@@ -52,7 +52,7 @@ def register(request):
 #TODO: Decide whether to take these out and move them to AJAX responses to reduce the 
 #up front load cost of all these DB queries - okay for now but won't scale particularly well
 #What's quicker - loads of DB calls up front or 3 different AJAX calls to fill in information
-def profile(request):
+def profile(request, username=''):
     context = {}
     
     reviewer = get_object_or_404(Reviewer, user=request.user)
@@ -102,9 +102,10 @@ def review_submit(request):
                 movie_id = request.POST.get('movie_id')
                 poster_url = request.POST.get('poster_url')
                 release_date = request.POST.get('release_date')
+                tagline = request.POST.get('tagline')
                 reviewer = get_object_or_404(Reviewer, user=request.user)
                 
-                m = op_addMovie(movie_title,release_date,movie_id, '', poster_url)
+                m = op_addMovie(movie_title,release_date,movie_id, tagline, poster_url)
                 if m is 0:
                     op_removeMovieFromWishlist(m, reviewer)
                     
@@ -118,3 +119,63 @@ def review_submit(request):
         return JsonResponse(errors)
     else:
         return render(request, 'registration/login.html')
+
+#Add movie to wishlist for user    
+def add_movie_to_wishlist(request):
+    if request.user.is_authenticated():
+        errors = {}
+        errors['error'] = []
+        if request.method == 'POST' and request.is_ajax():
+            if not request.POST.get('movie_id'):
+                errors['error'].append('Invalid movie id')
+            if not errors['error']:
+                movie_title = request.POST.get('movie_title')
+                movie_id = request.POST.get('movie_id')
+                poster_url = request.POST.get('poster_url')
+                release_date = request.POST.get('release_date')
+                tagline = request.POST.get('tagline')
+                reviewer = get_object_or_404(Reviewer, user=request.user)
+                
+                m = op_addMovie(movie_title, release_date, movie_id, tagline, poster_url)
+                w = op_addMovieToWishlist(reviewer, m);
+                if w.startswith('Error'):
+                    return JsonResponse({"wish_status":w})
+                else:
+                    return JsonResponse({"wish_status":"success"});
+        errors['status'] = "Failed to add movie to user's wishlist";
+        return JsonResponse(errors);
+    else:
+        return JsonResponse({"wish_status":"Not logged in"});
+    
+def get_movie_info(request):
+    context = {}
+    
+    if request.is_ajax():
+        m_id = request.GET.get('movie_id')
+        m = op_getMovie(m_id)
+        if m.startswith('Error'):
+            return Http404
+        context['movie'] = m
+        
+        if request.user.is_authenticated():
+            reviewer = get_object_or_404(Reviewer, user=request.user)
+            context['review'] = op_getReview(m,reviewer)
+            context['wishlist'] = op_isMovieWishlisted(m,reviewer)
+        return JsonResponse(context)
+    else:
+        raise Http404
+    
+def get_movie_page(request):
+    context = {}
+    
+    m_id = request.GET.get('movie_id')
+    m = op_getMovie(m_id)
+    
+    return render(request, 'moviediary/movie_page.html', context)
+
+def add_test_data(request):
+    if request.user.is_authenticated() and request.is_ajax():
+        op_fillTestData()
+        return JsonResponse({"status":"success"})
+    else :
+        raise Http404

@@ -19,7 +19,7 @@ def getReviewsForMovie(movie):
 
 def getUserReviewForMovie(movie, reviewer):
     #SELECT * FROM Review WHERE MovieId=movie.id AND UserId=reviewer.id
-    return Review.objects.filter(movie=movie).filter(user=reviewer)
+    return Review.objects.filter(movie=movie).filter(reviewer=reviewer)
 
 def getFollowingList(reviewer):
     #SELECT * FROM Following WHERE follower=reviewer
@@ -58,6 +58,9 @@ def getCountOfFollowersForUser(user):
 
 def getCountOfFollowedsForUser(user):
     return Following.objects.filter(follower=user).count()
+
+def getWishlistMovieForReviewer(reviewer, movie):
+    return Wishlist.objects.filter(reviewer=reviewer).filter(movie=movie).len() > 0
 
 #remove wishlist that matches reviewer and Movie
 def removeWishlist(reviewer, movie):

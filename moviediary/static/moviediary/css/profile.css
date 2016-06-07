@@ -26,3 +26,12 @@
 .larger_area {
 	background-color:grey;
 }
+
+#test_data_btn {
+	width:2em;
+	height:2em;
+	background-color:blue;
+	position:absolute;
+	right:0px;
+	top:0px;
+}
