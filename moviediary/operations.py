@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from moviediary.db_operations import getMovieWithTMDB_Id, getUserReviewForMovie, \
-    removeWishlist, getWishlistMovieForReviewer
+    removeWishlist, getWishlistMovieForReviewer, getReviewsForMovie
 from moviediary.models import Reviewer, Movie, Review, Wishlist, Following
 
 
@@ -53,7 +53,11 @@ def op_getReview(movie, reviewer):
     if r.exists():
         return r[0]         
     else:
-        return "Error:User has not reviewed " + movie.title   
+        return "Error:User has not reviewed " + movie.title  
+    
+#get recent reviews for movie
+def op_getMostRecentReviewsForMovie(movie):
+    return getReviewsForMovie(movie)[:3]
 
 #create a review for a movie from given reviewer, update reviewer and movie
 def op_addReview(reviewer, movie, review_text, review_date, score, headline):
@@ -72,11 +76,12 @@ def op_addReview(reviewer, movie, review_text, review_date, score, headline):
         
         #Update user's number of reviews
         reviewer.num_of_reviews+=1
-        reviewer.save()
         
         #Update movie's average score and number of reviews
-        movie.average_review_score = ((movie.average_review_score * movie.num_of_reviews) + score)/(movie.num_of_reviews+1)
+        movie.average_review_score = ((movie.average_review_score * movie.num_of_reviews) + int(score))/(movie.num_of_reviews+1)
         movie.num_of_reviews+=1
+        
+        reviewer.save()
         movie.save()
         
         return r;    
@@ -103,6 +108,28 @@ def op_addFollower(follower, followed):
 def op_isMovieWishlisted(movie, reviewer):
     w = getWishlistMovieForReviewer(reviewer,movie)
     return w.exists()
+
+def op_normalizeMovieObject(movie):
+    m = {}
+    m['title'] = movie.title
+    m['release_date'] = movie.release_date
+    m['ext_id'] = movie.ext_id
+    m['tagline'] = movie.tagline
+    m['image_url'] = movie.image_url
+    m['num_of_reviews'] = movie.num_of_reviews
+    m['average_review_score'] = movie.average_review_score
+    return m
+
+def op_normalizeReviewObject(review):
+    r = {}
+    r['score'] = review.score
+    r['movie'] = review.movie.title
+    r['reviewer'] = review.reviewer.user.username
+    r['review_text'] = review.review_text
+    r['review_headline'] = review.review_headline
+    r['review_date'] = review.review_date
+    return r
+    
 
 #put test data into database    
 def op_fillTestData():

@@ -9,7 +9,7 @@
                 <div id="header_right">
                     <span>
                     {% if user.is_authenticated %}
-                    	<a href="profile/">Profile</a>
+                    	<a href="profile/{{ user.username }}/">Profile</a>
                     {% else %}
                     	<a href="accounts/login/">Login/Signup</a>
                     {% endif %}

@@ -1,3 +1,5 @@
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
 html {
     font-family: "ubuntu", sans-serif;
 }
@@ -178,16 +180,16 @@ form p.error {
 }
 
 a.review_btn {
-	bottom:10px;
+	float:right;
 }
 
 a.wish_btn {	
-	top:28px;
+	top:28px;	
+	position:absolute;
 }
 
 a.movie_action_btn {
 	right:2em;
-	position:absolute;
 	text-decoration:underline;
 	color:blue;
 }
@@ -206,4 +208,63 @@ a.movie_action_btn:hover {
 #movies_list li #movie_info .extra_deets .extras_div .extras_val {
 	display:inline-block;
 	width:80%
+}
+
+#movies_list li div.rev_stars {
+	display:inline-block;
+	border:0;
+	color:#ffd700;
+	padding:0px;
+	width:25%;
+}
+
+#movies_list li div.rev_stars span.star {
+	display:inline-block;
+	padding: 0;
+}
+
+#movies_list li div.rev_stars span.star:before {
+	content: "\f005";
+	margin:0;
+	font-size: 1.6rem;
+	display:inline-block;
+	font-family: FontAwesome;
+	padding: .3rem .2rem;
+}
+
+#movies_list li div.rev_stars span.half:before {
+	content: "\f089";
+	padding-right:0;
+}
+
+#movies_list li #movie_info .extra_deets .extras_div .rec_rev_label {
+	font-weight:bold;
+	font-size:x-large;
+}
+
+.review_view {
+	background-color:whitesmoke;
+	border-radius: 10px;
+	padding: 0.5em;
+	margin: 0.5em;
+}
+
+.rev_headline {
+	font-weight:bold;
+}
+
+#movies_list li #movie_info span.rev_date {
+	display:inline-block;
+	float:right;
+}
+
+.rev_username {
+	display:block;
+	font-weight:bold;
+	font-size:large;
+}
+
+.rev_text {
+	margin: 0;
+	padding: 5px;
 }

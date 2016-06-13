@@ -1,5 +1,7 @@
 #from django.shortcuts import render
 import re
+import time
+import types
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse, Http404
@@ -14,12 +16,19 @@ from moviediary.db_operations import getWishlistMovies, getReviewsForUser, \
 from moviediary.models import Reviewer
 from moviediary.operations import op_signup, op_addMovie, \
     op_removeMovieFromWishlist, op_addReview, op_addMovieToWishlist, op_getMovie, \
-    op_getReview, op_isMovieWishlisted, op_fillTestData
+    op_getReview, op_isMovieWishlisted, op_fillTestData, \
+    op_getMostRecentReviewsForMovie, op_normalizeMovieObject, \
+    op_normalizeReviewObject
 
 
 # Create your views here.
 def index(request):
     context = {}
+    return render(request, 'moviediary/homepage.html', context)
+
+def search(request):
+    context = {}
+    
     return render(request, 'moviediary/index.html', context)
 
 def signup(request, username, email, password):
@@ -55,7 +64,14 @@ def register(request):
 def profile(request, username=''):
     context = {}
     
-    reviewer = get_object_or_404(Reviewer, user=request.user)
+    if (username == '') or (username == request.user.username):
+        reviewer = get_object_or_404(Reviewer, user=request.user)
+    else:
+        try:
+            user = User.objects.get(username=username)
+        except:
+            raise Http404
+        reviewer = get_object_or_404(Reviewer, user=user)
     context['reviewer'] = reviewer
     
     #Possibly limit as numbers get too big to reduce performance for these profile DB queries?
@@ -76,6 +92,11 @@ def profile(request, username=''):
     
 def review_form(request):
     return render(request, 'moviediary/review_form.html')
+
+def profile_reviews(request, username=''):
+    context = {}
+    
+    return render(request, 'moviediary/profile_reviews.html', context)
 
 #Add movie to DB if not there
 #Remove movie from user's wishlist
@@ -105,13 +126,16 @@ def review_submit(request):
                 tagline = request.POST.get('tagline')
                 reviewer = get_object_or_404(Reviewer, user=request.user)
                 
+                rel_date_obj = time.strptime(review_date, "%d %B %Y")
+                review_date = time.strftime("%Y-%m-%d", rel_date_obj)
+                
                 m = op_addMovie(movie_title,release_date,movie_id, tagline, poster_url)
                 if m is 0:
                     op_removeMovieFromWishlist(m, reviewer)
                     
                 r = op_addReview(reviewer, m, review_text, review_date, rating, headline)
                 
-                if r.startswith('Error'):
+                if isinstance(r, types.StringTypes):
                     return JsonResponse({"review_status":r})
                 else:
                     return JsonResponse({"review_status":"success"});
@@ -153,13 +177,24 @@ def get_movie_info(request):
     if request.is_ajax():
         m_id = request.GET.get('movie_id')
         m = op_getMovie(m_id)
-        if m.startswith('Error'):
-            return Http404
-        context['movie'] = m
+        if type(m) is str:
+            return JsonResponse({'status':'error - no movie found with ID'})
+        context['movie'] = op_normalizeMovieObject(m)
+        context['status'] = "Success - Found movie"
+        
+        ctxt_revs = []
+        reviews = op_getMostRecentReviewsForMovie(m)
+        for r in reviews:
+            ctxt_revs.append(op_normalizeReviewObject(r))
+        
+        if len(ctxt_revs) > 0:
+            context['recent_reviews'] = ctxt_revs
         
         if request.user.is_authenticated():
             reviewer = get_object_or_404(Reviewer, user=request.user)
-            context['review'] = op_getReview(m,reviewer)
+            r = op_getReview(m,reviewer)
+            if not isinstance(r, types.StringTypes):
+                context['review'] = op_normalizeReviewObject(r)
             context['wishlist'] = op_isMovieWishlisted(m,reviewer)
         return JsonResponse(context)
     else:

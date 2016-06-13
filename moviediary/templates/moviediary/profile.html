@@ -3,12 +3,12 @@
 {% load staticfiles %}
 	<link rel="stylesheet" href="{% static 'moviediary/css/profile.css' %}">
 {% endblock %}
-{% block title %}{{request.user.username}}'s Profile{% endblock %}
+{% block title %}{{reviewer.user.username}}'s Profile{% endblock %}
 {% block content %}
 	<div id="wrapper">
 		<div id="header_container">
 		    <div id="header_left">
-		        <h1>{{request.user.username}}'s Profile</h1>
+		        <h1>{{reviewer.user.username}}'s Profile</h1>
 		    </div>
 		    <div id="header_right">
 		        <span><a href="/moviediary/">Homepage</a></span>
@@ -24,7 +24,7 @@
 			<div id="user_area">
 				<div class="label_field_div">
 					<span class="span_label">Email:</span>
-					<span class="span_field">{{request.user.email}}</span>
+					<span class="span_field">{{reviewer.user.email}}</span>
 				</div>
 				
 				{% if reviewer.bio and reviewer.bio.strip %}
@@ -38,6 +38,13 @@
 				<div class="label_field_div">
 					<span class="span_label">Why I Love Movies:</span>
 					<span class="span_field">{{reviewer.love_movie_text}}</span>
+				</div>
+				{% endif %}
+				
+				{% if reviewer.love_movie_text and reviewer.love_movie_text.strip %}
+				<div class="label_field_div">
+					<span class="span_label">Favourite Types of Movies:</span>
+					<span class="span_field">{{reviewer.favourite_genres}}</span>
 				</div>
 				{% endif %}
 				

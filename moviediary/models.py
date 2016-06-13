@@ -11,6 +11,9 @@ class Reviewer(models.Model):
     user=models.OneToOneField(User, on_delete=models.CASCADE)
     num_of_reviews=models.IntegerField('Number of Reviews', default=0)
     reset_token = models.CharField(max_length=12, default='')
+    bio = models.TextField('Bio', default='')
+    love_movie_text = models.TextField('Love Movies', default='')
+    favourite_genres = models.TextField('Favourite Genres', default='')
     
     def __unicode__(self):
         return self.user
@@ -37,8 +40,6 @@ class Review(models.Model):
     second_review = models.TextField('Second Impressions', default='')
     second_headline = models.TextField('Second Headline', default='')  
     second_rev_date = models.DateField('Second Impressions Date', default=datetime.date.today)
-    bio = models.TextField('Bio', default='')
-    love_movie_text = models.TextField('Reason', default='')
     
     def __unicode__(self):
         return u'%s reviewing %s' % (self.user.username, self.movie.title)

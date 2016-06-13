@@ -18,6 +18,28 @@
  	</script>  
 </head>
 <body>
+	<div id="wrapper">
+		<div id="navbar">
+			<div id="nav_left">
+				<h1>Roger Mebert</h1>
+			</div>
+			<div id="navbar_center">
+				<div id="searchbar">
+					<input type="text" placeholder="Movie Title" id="title_search_txt">
+                    <a class="button" id="title_search_btn">Search</a>
+				</div>
+			</div>
+			<div id="navbar_right">
+				<span>
+                {% if user.is_authenticated %}
+                	<a href="profile/{{ user.username }}/">Profile</a>
+                {% else %}
+                	<a href="accounts/login/">Login/Signup</a>
+                {% endif %}
+                </span>
+			</div>
+		</div>
+	</div>
 	{% block content %}{% endblock %}
     {% block footer %}
     <hr>

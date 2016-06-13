@@ -4,7 +4,7 @@ var monthNames = ["January", "February", "March", "April", "May", "June",
 var rtn_tom_page_limit = "page_limit=";
 var pg_limit = 10;
 var query = "";
-var is_user_auth = "{{% user.is_authenticated %}}"
+var is_user_auth = "{{% user.is_authenticated %}}";
 
 $("#title_search_btn").on("click", searchMovieTitle);
 
@@ -34,7 +34,9 @@ function loadForm(event) {
 		var form = $(event.target).parent().find(".movie_form");
 		form.submit(submitFormAJAX);
 		form.find("#form_btn").on("click", onSubmitClicked);
-		$("#datepicker").datepicker();
+		//Forcing the use of the Irish locale for the datepicker so the server can parse the date string
+		//Needs to be fixed so the locale can be changed per user and the client sends the right format so the server doesn't need to parse
+		$("#datepicker").datepicker({"dateFormat":"dd MM yy"});
 		
 		var movie_id = $(event.target).parent().parent().parent().attr('id').split('_')[1];
 		
@@ -83,15 +85,29 @@ function expandMovie(event) {
 	if(movie_li.find(".extra_deets").length)
 		movie_li.find(".extra_deets").show("slow");
 	else {
+		extraStr = "<div class='extra_deets'><div class='tmdb_extras'></div><div class='mebert_extras'></div>";
+		if (is_user_auth) {
+			extraStr += "<a class='review_btn movie_action_btn'>Review this Movie</a>";
+			extraStr += "<a class='wish_btn movie_action_btn'>Add to Wishlist</a>";
+		}
+		extraStr += "</div>";
+		movie_li.children(":first").append(extraStr);
 		$.ajax({
 			type:'GET',
 			url:'get_movie_info/',
 			dataType:"json",
 			data:{
-				"movie_id":'"' + movie['id'] + '"'
+				"movie_id":movie['id']
 			},
 			success: function (data) {
-				buildMebertsExtraString(data);
+				if(data['status'].startsWith("error"))
+					console.log("Movie not on the DB with id " + movie['id']);
+				else
+					if(data.review) {
+						movie_li.children(":first").find(".review_btn").hide();
+						movie_li.children(":first").find(".wish_btn").hide();
+					}
+					movie_li.children(":first").find(".mebert_extras").append(buildMebertsExtraString(data));
 			}
 		})
 		
@@ -100,7 +116,7 @@ function expandMovie(event) {
 				"append_to_response":"credits"
 			},
 			function(data) {
-				movie_li.children(":first").append(buildExtraDetailsString(data));
+				movie_li.children(":first").find(".tmdb_extras").append(buildExtraDetailsString(data));
 				$(".review_btn").on("click", loadForm);
 				$(".wish_btn").on("click", addToWishlist);
 			})
@@ -123,11 +139,64 @@ function hideMovieExtras(event) {
 }
 
 function buildMebertsExtraString(info) {
+	var mebertStr = "";
+	var arr = {
+			'Number of Reviews':info.movie.num_of_reviews,
+			'Average Score':info.movie.average_review_score
+	}
+	mebertStr += buildExtrasString(arr);
 	
+	if(info.review) {
+		mebertStr += "<div class='extras_div'>" + buildReviewDiv(info.review, true) + "</div>";
+	}
+	
+	if(info.recent_reviews){
+		mebertStr += "<div class='extras_div'><span class='rec_rev_label'>Latest Reviews</span>";
+		for(r in info.recent_reviews){
+			mebertStr += buildReviewDiv(info.recent_reviews[r], false);
+		}
+		mebertStr += "</div>"
+	}
+	return mebertStr;
+}
+
+function buildReviewDiv(rev, user_review) {
+	var revStr = "<div class='review_view'>";
+	
+	//If the review is from the user, the username will just say Your Review
+	if (user_review) {
+		revStr += "<span class='rev_username'>Your Review</span>";
+	} else {
+		//Otherwise, print user's name and make it a link for the profile of the user
+		revStr += "<a class='rev_username' href='profile/"+rev.reviewer+"/'>" + rev.reviewer + "</a>";
+	}
+	
+	//Add the review score
+	revStr += "<div class='rev_stars'>";
+	for(var i = 0; i < ((parseInt(rev.score)-1)/2); i++){
+		revStr += "<span class='star'></span>";
+	}
+	if (parseInt(rev.score)%2!=0) {
+		revStr += "<span class='star half'></span>";
+	}
+	revStr += "</div>";
+	
+	//Add the review date
+	revStr += "<span class='rev_date'>" + getDateString(new Date(rev.review_date)) + "</span>";
+	
+	//Add the review headline
+	revStr += "<span class='rev_headline'>" + rev.review_headline + "</span>";
+	
+	//Add the review text
+	revStr += "<p class='rev_text'>" + rev.review_text + "</span>";
+	
+	revStr += '</div>';
+	
+	return revStr;
 }
 
 function buildExtraDetailsString(movie) {
-	extraStr = "<div class='extra_deets'><div class='tmdb_extras'>";
+	extraStr = "";
 	
 	var arr = {
 			'Tagline':movie.tagline,
@@ -140,12 +209,7 @@ function buildExtraDetailsString(movie) {
 			'TMDB Vote':movie.vote_average
 	}
 	extraStr += buildExtrasString(arr)
-	extraStr += "</div><div class='mebert_extras'></div>";
-	if (is_user_auth) {
-		extraStr += "<a class='review_btn movie_action_btn'>Review this Movie</a>";
-		extraStr += "<a class='wish_btn movie_action_btn'>Add to Wishlist</a>";
-	}
-	extraStr += "</div>";
+	
 	return extraStr;
 }
 
@@ -253,7 +317,7 @@ function buildItem(movie, index) {
 
 function getImageUrl(movie) {
 	if (movie['poster_path'] == null){
-		return "";
+		return '<img src="/static/moviediary/images/no_image.jpg"/>';
 	}
 	var imUrl = tmdb.images_uri+'/w500'+movie['poster_path'];
 	return '<img src="' + imUrl + '"/>';
