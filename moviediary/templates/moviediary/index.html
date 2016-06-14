@@ -1,33 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Movie Diary{% endblock %}
 {% block content %}
-	  <div id="wrapper">
-            <div id="header_container">
-                <div id="header_left">
-                    <h1>Roger Mebert</h1>
-                </div>
-                <div id="header_right">
-                    <span>
-                    {% if user.is_authenticated %}
-                    	<a href="profile/{{ user.username }}/">Profile</a>
-                    {% else %}
-                    	<a href="accounts/login/">Login/Signup</a>
-                    {% endif %}
-                    </span>
-                </div>
-                <div class="clear"></div>
-            </div>
-            <div id="body_container">
-                <div id="searchbar"> 
-                    <input type="text" placeholder="Movie Title" id="title_search_txt">
-                    <a class="button" id="title_search_btn">Search</a>
-                </div>
-                <ul id="movies_list"></ul>
-            </div>
-        </div>
+	<div id="wrapper">
+		<div id="body_container">
+		    <ul id="movies_list"></ul>
+		</div>
+	</div>
 {% endblock %}
 
 {% block scripts %}
+<script type="text/javascript">
+	var init_query = "{{ search_title }}"
+</script>
 {% load staticfiles %} 
 <script src="{% static 'moviediary/js/review.js' %}"></script>
 <script src="{% static 'moviediary/js/tmdb.js' %}"></script>

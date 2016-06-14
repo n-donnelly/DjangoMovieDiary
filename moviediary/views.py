@@ -3,23 +3,24 @@ import re
 import time
 import types
 
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.http import HttpResponse, Http404
 from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.context import Context
 from django.utils.html import strip_tags
-from django.contrib.auth import logout
 
 from moviediary.db_operations import getWishlistMovies, getReviewsForUser, \
     getCountOfFollowersForUser, getCountOfFollowedsForUser, \
     getReviewsFromFollowed
-from moviediary.models import Reviewer
+from moviediary.models import Reviewer, Movie
 from moviediary.operations import op_signup, op_addMovie, \
     op_removeMovieFromWishlist, op_addReview, op_addMovieToWishlist, op_getMovie, \
     op_getReview, op_isMovieWishlisted, op_fillTestData, \
     op_getMostRecentReviewsForMovie, op_normalizeMovieObject, \
     op_normalizeReviewObject
+
 
 # Create your views here.
 def index(request):
@@ -29,16 +30,13 @@ def index(request):
 def search(request):
     context = {}
     
+    if request.GET.get("title"):
+        context['search_title'] = request.GET.get("title")
     return render(request, 'moviediary/index.html', context)
 
 def signup(request, username, email, password):
     #See if username exists, if so get salt add to password and hash and see if it matches hashed_password
     return HttpResponse("Attempting to sign up with username: " + username)
-
-def review(request, title, ext_id, poster_url, date_seen, tagline, score, review, user_id):
-    #add movie to DB with title, ext_id, poster_url, date_seen, tagline
-    #Create review from user id and movie id
-    return HttpResponse("Attempting to review movie: " + title)
 
 def register(request):
     username = strip_tags(request.POST.get('username', ''))
@@ -206,7 +204,8 @@ def get_movie_page(request):
     context = {}
     
     m_id = request.GET.get('movie_id')
-    m = op_getMovie(m_id)
+    m = get_object_or_404(Movie, ext_id=m_id)
+    context['movie'] = m;
     
     return render(request, 'moviediary/movie_page.html', context)
 

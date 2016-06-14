@@ -39,10 +39,11 @@
             {% endif %}
 		</div>
 		<div id="navbar_center">
-			<div id="searchbar">
-				<input type="text" placeholder="Movie Title" id="title_search_txt">
-                   <a class="button" id="title_search_btn">Search</a>
-			</div>
+			<form id="searchbar" action="/moviediary/search/" method="get">
+				<input type="text" placeholder="Movie Title" id="title_search_txt" name="title">
+                <a class="button" id="title_search_btn">Search</a>
+                
+			</form>
 		</div>
 	</div>
 	{% block content %}{% endblock %}

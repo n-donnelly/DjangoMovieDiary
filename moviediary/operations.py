@@ -13,7 +13,7 @@ from moviediary.db_operations import getMovieWithTMDB_Id, getUserReviewForMovie,
     removeWishlist, getWishlistMovieForReviewer, getReviewsForMovie
 from moviediary.models import Reviewer, Movie, Review, Wishlist, Following
 
-
+#List of all the profile pics so they can be randomly assigned during sign up for new users
 profile_pics = ['ace.jpg',
                 'amelie.jpg',
                 'bride.jpg',
@@ -47,7 +47,7 @@ def op_signup(user):
     r = Reviewer.objects.create(user=user, 
              num_of_reviews=0,
              reset_token=recovery,
-             profile_pic = random.randrange(19))
+             profile_pic = profile_pics[random.randrange(19)])
     return r
     
 #create a movie instance for the DB

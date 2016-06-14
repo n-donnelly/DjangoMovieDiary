@@ -2,19 +2,17 @@ var current_movie_list;
 var monthNames = ["January", "February", "March", "April", "May", "June",
                   "July", "August", "September", "October", "November", "December"];
 var rtn_tom_page_limit = "page_limit=";
-var pg_limit = 10;
+var pg_limit = 20;
 var query = "";
 var is_user_auth = "{{% user.is_authenticated %}}";
 
-$("#title_search_btn").on("click", searchMovieTitle);
-
-$('#title_search_txt').keydown(function(event){
-	if ( event.which == 13 ) {
-	   event.preventDefault();
-	   searchMovieTitle();
+$(document).ready(function(){
+	if(init_query) {
+		$("#title_search_txt").val(init_query);
+		searchMovieTitle();
 	}
 })
-
+	
 function loadResults(data){
 	createResultsString(data, function(results){
 		$("#movies_list").append(results);
@@ -105,6 +103,9 @@ function expandMovie(event) {
 				else
 					if(data.review) {
 						movie_li.children(":first").find(".review_btn").hide();
+						movie_li.children(":first").find(".wish_btn").hide();
+					}
+					if(data.wishlist) {
 						movie_li.children(":first").find(".wish_btn").hide();
 					}
 					movie_li.children(":first").find(".mebert_extras").append(buildMebertsExtraString(data));
