@@ -9,6 +9,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.context import Context
 from django.utils.html import strip_tags
+from django.contrib.auth import logout
 
 from moviediary.db_operations import getWishlistMovies, getReviewsForUser, \
     getCountOfFollowersForUser, getCountOfFollowedsForUser, \
@@ -19,7 +20,6 @@ from moviediary.operations import op_signup, op_addMovie, \
     op_getReview, op_isMovieWishlisted, op_fillTestData, \
     op_getMostRecentReviewsForMovie, op_normalizeMovieObject, \
     op_normalizeReviewObject
-
 
 # Create your views here.
 def index(request):
@@ -58,6 +58,11 @@ def register(request):
     op_signup(user)
     return render(request, 'moviediary/profile.html .movie_form')
 
+def logout_view(request):
+    logout(request)
+    context = {"user_status":"logged out"}
+    return render(request, 'moviediary/homepage.html', context)
+
 #TODO: Decide whether to take these out and move them to AJAX responses to reduce the 
 #up front load cost of all these DB queries - okay for now but won't scale particularly well
 #What's quicker - loads of DB calls up front or 3 different AJAX calls to fill in information
@@ -85,10 +90,7 @@ def profile(request, username=''):
     
     context['follow_reviews'] = getReviewsFromFollowed(reviewer)
     
-    if request.user.is_authenticated():
-        return render(request, 'moviediary/profile.html', context)
-    else:
-        return render(request, 'registration/login.html')
+    return render(request, 'moviediary/profile.html', context)
     
 def review_form(request):
     return render(request, 'moviediary/review_form.html')

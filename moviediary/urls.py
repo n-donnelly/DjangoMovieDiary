@@ -6,13 +6,13 @@ Created on 13 Mar 2016
 
 from django.conf.urls import url
 from . import views
-from django.contrib.auth.views import login, logout
+from django.contrib.auth.views import login
 
 urlpatterns = [
     url(r'^$', views.index, name='homepage'),
     url(r'^search/$', views.search, name='search'),
     url(r'^accounts/login/$', login),
-    url(r'^accounts/logout/$', logout),
+    url(r'^accounts/logout/$', views.logout_view),
     url(r'^accounts/register/$', views.register, name='register'),
     url(r'^profile/(?P<username>\w+)/$', views.profile, name='profile'),
     url(r'^profile/$', views.profile, name='profile'),

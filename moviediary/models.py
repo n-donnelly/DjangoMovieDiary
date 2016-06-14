@@ -14,6 +14,7 @@ class Reviewer(models.Model):
     bio = models.TextField('Bio', default='')
     love_movie_text = models.TextField('Love Movies', default='')
     favourite_genres = models.TextField('Favourite Genres', default='')
+    profile_pic = models.CharField(max_length=20, default='amelie.jpg')
     
     def __unicode__(self):
         return self.user

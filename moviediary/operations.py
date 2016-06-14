@@ -3,6 +3,7 @@ Created on 2 Apr 2016
 
 @author: Neil Donnelly
 '''
+import random
 import uuid
 
 from django.contrib.auth.models import User
@@ -12,6 +13,27 @@ from moviediary.db_operations import getMovieWithTMDB_Id, getUserReviewForMovie,
     removeWishlist, getWishlistMovieForReviewer, getReviewsForMovie
 from moviediary.models import Reviewer, Movie, Review, Wishlist, Following
 
+
+profile_pics = ['ace.jpg',
+                'amelie.jpg',
+                'bride.jpg',
+                'burgundy.jpg',
+                'drebin.jpg',
+                'ferris.png',
+                'furiosa.jpg',
+                'gandalf.jpg',
+                'hermione.jpg',
+                'indiana.jpg',
+                'inigo.jpg',
+                'katniss.jpg',
+                'leia.jpg',
+                'man.jpg',
+                'marge.jpeg',
+                'maximus.jpg',
+                'neo.jpg',
+                'ripley.jpg',
+                'scarlet.jpg',
+                'shaun.jpeg']
 
 #function to set up user on DB        
 def op_signup(user):
@@ -24,7 +46,8 @@ def op_signup(user):
     #Creates user object for DB and saves
     r = Reviewer.objects.create(user=user, 
              num_of_reviews=0,
-             reset_token=recovery)
+             reset_token=recovery,
+             profile_pic = random.randrange(19))
     return r
     
 #create a movie instance for the DB

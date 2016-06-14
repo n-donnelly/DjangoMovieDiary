@@ -4,21 +4,23 @@
 	<link rel="stylesheet" href="{% static 'moviediary/css/profile.css' %}">
 {% endblock %}
 {% block title %}{{reviewer.user.username}}'s Profile{% endblock %}
+{% block  links %}
+	<span><a href="/moviediary/">Homepage</a></span>
+{% endblock %}
 {% block content %}
 	<div id="wrapper">
 		<div id="header_container">
 		    <div id="header_left">
 		        <h1>{{reviewer.user.username}}'s Profile</h1>
 		    </div>
-		    <div id="header_right">
-		        <span><a href="/moviediary/">Homepage</a></span>
-		    </div>
 		    <div class="clear"></div>
 		</div>
 		<div id="body_container">
 			{% load staticfiles %}
 			<div id="profile_image">
-				<img src='{% static "moviediary/images/profile.jpg" %}' alt="Profile Pic">
+				{% with 'moviediary/images/profile/'|add:reviewer.profile_pic as image_static %}
+					<img src='{% static image_static %}' alt="Profile Pic">
+				{% endwith %}
 			</div>
 			
 			<div id="user_area">

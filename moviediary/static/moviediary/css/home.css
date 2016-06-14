@@ -20,6 +20,12 @@ body {
     margin: 0 auto;
 }
 
+#navbar {
+	position: relative;
+	max-width: 1170px;
+	margin: 0 auto;
+}
+
 #header_container {
     height: 80px;
 }
@@ -38,17 +44,23 @@ body {
 	left: 0;
 }
 
-#header_left {
+#navbar_left {
     float: left;
+    height:64px;
 }
 
-#header_right {
+#navbar_right {
     float: right;
     line-height: 80px;
+    height:64px;
 }
 
-#header_right span {
+#nav_right span {
     padding: 0 0 0 15px;
+}
+
+#navbar_center {
+	margin:0 auto;
 }
 
 #searchbar {
