@@ -7,7 +7,7 @@ var query = "";
 var is_user_auth = "{{% user.is_authenticated %}}";
 
 $(document).ready(function(){
-	if(init_query) {
+	if(typeof init_query !== 'undefined') {
 		$("#title_search_txt").val(init_query);
 		searchMovieTitle();
 	}
@@ -22,7 +22,7 @@ function loadResults(data){
 }
 
 function loadForm(event) {
-	$.get("review_form", function(data) {
+	$.get("/moviediary/review_form", function(data) {
 		$(event.target).html("Nevermind");
 		$(event.target).off("click");
 		$(event.target).on("click", hideForm);
@@ -92,7 +92,7 @@ function expandMovie(event) {
 		movie_li.children(":first").append(extraStr);
 		$.ajax({
 			type:'GET',
-			url:'get_movie_info/',
+			url:'/moviediary/get_movie_info/',
 			dataType:"json",
 			data:{
 				"movie_id":movie['id']
@@ -109,6 +109,10 @@ function expandMovie(event) {
 						movie_li.children(":first").find(".wish_btn").hide();
 					}
 					movie_li.children(":first").find(".mebert_extras").append(buildMebertsExtraString(data));
+					
+					var m_title = movie_li.find("#title").html();
+					var newTitleStr = "<a href='/moviediary/movie/"+movie['id']+"/'>" + m_title + "</a>";
+					movie_li.find("#title").html(newTitleStr);
 			}
 		})
 		
@@ -287,7 +291,7 @@ function addToWishlist(event) {
 	
 	$.ajax({
 		type:'POST',
-		url:'add_movie_to_wishlist/',
+		url:'/moviediary/add_movie_to_wishlist/',
 		data:wishlistArr,
 		success:function(data) {
 			$(event.target).html(data['wish_status']);
@@ -303,9 +307,9 @@ function buildItem(movie, index) {
 	var builtStr = "<li id='movie_" + index + "'><div id='movie_info'><div class='movie_image'>";
 	builtStr += getImageUrl(movie);
 	builtStr += "</div><div class='movie_deets'>";
-	var arr = {'Title' : movie.title,
-			'Year' : getDateString(new Date(movie.release_date)),
-			'Overview' : movie.overview}
+	var arr = {'title' : movie.title,
+			'release' : getDateString(new Date(movie.release_date)),
+			'overview' : movie.overview}
 	builtStr += buildString(arr) + '</div>';
 	
 	/*if (is_user_auth) {
@@ -324,20 +328,11 @@ function getImageUrl(movie) {
 	return '<img src="' + imUrl + '"/>';
 }
 
-function buildString (elemArr) {
-	var startItem = '<span>';
-	var endItem = '</span>';
-	var midItem = '</span><span>';
-	
-	var retStr = startItem;
-	var i = 0;
+function buildString (elemArr) {	
+	var retStr = "";
 	for(var elem in elemArr) {
 		if(elemArr.hasOwnProperty(elem)){
-			if(elemArr[elem] != "-1%" && elemArr[elem] != "" && elemArr[elem] != "null"){
-				retStr += elemArr[elem];
-				retStr += (i == Object.size(elemArr) - 1 ? endItem : midItem);
-			}
-			i++;
+			retStr += "<span id='" + elem + "'>" + elemArr[elem] + "</span>"
 		}
 	}
 	

@@ -7,22 +7,20 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.http import HttpResponse, Http404
 from django.http.response import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404  
 from django.template.context import Context
 from django.utils.html import strip_tags
 
-from moviediary.db_operations import getWishlistMovies, getReviewsForUser, \
-    getCountOfFollowersForUser, getCountOfFollowedsForUser, \
-    getReviewsFromFollowed
+from moviediary.db_operations import getWishlistMoviesForReviewer, getReviewsForUser, \
+    getCountOfFollowersForUser, getCountOfFollowedsForUser
 from moviediary.models import Reviewer, Movie
 from moviediary.operations import op_signup, op_addMovie, \
     op_removeMovieFromWishlist, op_addReview, op_addMovieToWishlist, op_getMovie, \
     op_getReview, op_isMovieWishlisted, op_fillTestData, \
     op_getMostRecentReviewsForMovie, op_normalizeMovieObject, \
-    op_normalizeReviewObject
+    op_normalizeReviewObject, op_updateReviewerProfile
 
 
-# Create your views here.
 def index(request):
     context = {}
     return render(request, 'moviediary/homepage.html', context)
@@ -77,26 +75,96 @@ def profile(request, username=''):
         reviewer = get_object_or_404(Reviewer, user=user)
     context['reviewer'] = reviewer
     
-    #Possibly limit as numbers get too big to reduce performance for these profile DB queries?
-    context['wishlist'] = getWishlistMovies(reviewer)
+    wish_movs = []
+    wishlists = getWishlistMoviesForReviewer(reviewer, 4)
+    for w in wishlists:
+        wish_movs.append(op_normalizeMovieObject(w.movie))
     
-    context['reviews'] = getReviewsForUser(reviewer)
+    if len(wish_movs) > 0:
+        context['wishlist'] = wish_movs
+    
+    user_revs = []
+    reviews = getReviewsForUser(reviewer)
+    for r in reviews:
+        user_revs.append(op_normalizeReviewObject(r))
+    
+    if len(user_revs) > 0:
+        context['reviews'] = user_revs;
     
     context['num_following'] = getCountOfFollowersForUser(reviewer)
     
     context['num_followed'] = getCountOfFollowedsForUser(reviewer)
     
-    context['follow_reviews'] = getReviewsFromFollowed(reviewer)
+    #context['follow_reviews'] = getReviewsFromFollowed(reviewer)
     
     return render(request, 'moviediary/profile.html', context)
     
 def review_form(request):
     return render(request, 'moviediary/review_form.html')
 
-def profile_reviews(request, username=''):
+def profile_reviews(request, username='', page=1):
     context = {}
     
+    if (username == '') or (username == request.user.username):
+        reviewer = get_object_or_404(Reviewer, user=request.user)
+    else:
+        try:
+            user = User.objects.get(username=username)
+        except:
+            raise Http404
+        reviewer = get_object_or_404(Reviewer, user=user)
+    
+    context['reviewer'] = reviewer
+    context['current_page'] = page
+        
+    user_revs = []
+    reviews = getReviewsForUser(reviewer)
+    for r in reviews:
+        user_revs.append(op_normalizeReviewObject(r))
+    
+    p = int(page)-1
+    
+    if len(user_revs) > 0:
+        if len(user_revs) > p*20:
+            context['reviews'] = user_revs[p*20:page*20]
+            context['reviews_len'] = len(user_revs)
+            context['num_pages'] = (len(user_revs)/20)+1
+        else:
+            raise Http404
+    
     return render(request, 'moviediary/profile_reviews.html', context)
+
+def profile_wishlist(request, username='', page=1):
+    context = {}
+    
+    if (username == '') or (username == request.user.username):
+        reviewer = get_object_or_404(Reviewer, user=request.user)
+    else:
+        try:
+            user = User.objects.get(username=username)
+        except:
+            raise Http404
+        reviewer = get_object_or_404(Reviewer, user=user)
+    
+    context['reviewer'] = reviewer
+    context['current_page'] = page
+    
+    wish_movs = []
+    wishlists = getWishlistMoviesForReviewer(reviewer)
+    for w in wishlists:
+        wish_movs.append(op_normalizeMovieObject(w.movie))
+    
+    p = int(page)-1
+    
+    if len(wish_movs) > 0:
+        if len(wish_movs) > p*20:
+            context['wishlist'] = wish_movs[p*20:(page)*20]
+            context['wish_length'] = len(wish_movs)
+            context['num_pages'] = (len(wish_movs)/20)+1
+        else:
+            raise Http404
+    
+    return render(request, 'moviediary/profile_wishlist.html', context)
 
 #Add movie to DB if not there
 #Remove movie from user's wishlist
@@ -199,12 +267,24 @@ def get_movie_info(request):
         return JsonResponse(context)
     else:
         raise Http404
-    
-def get_movie_page(request):
+
+def edit_profile(request, username=''):
+    if request.user.is_authenticated() and request.user.username==username:
+        if request.method == 'POST':
+            reviewer = get_object_or_404(Reviewer, user=request.user)
+            
+            bio = request.POST.get('bio') if request.POST.get('bio') else reviewer.bio
+            love_movies = request.POST.get('love_movies') if request.POST.get('love_movies') else reviewer.love_movie_text
+            fav_genres = request.POST.get('genre') if request.POST.get('genre') else reviewer.favourite_genres
+            
+            op_updateReviewerProfile(reviewer,bio,love_movies,fav_genres)
+            
+    return profile(request)
+   
+def get_movie_page(request, movie_id):
     context = {}
     
-    m_id = request.GET.get('movie_id')
-    m = get_object_or_404(Movie, ext_id=m_id)
+    m = get_object_or_404(Movie, ext_id=movie_id)
     context['movie'] = m;
     
     return render(request, 'moviediary/movie_page.html', context)

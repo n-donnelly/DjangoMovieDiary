@@ -29,9 +29,18 @@ def getFollowersList(reviewer):
     #SELECT * FROM Following WHERE follower=reviewer
     return Following.objects.filter(followed=reviewer)
 
-def getWishlistMovies(reviewer):
+def getWishlistMoviesForReviewer(reviewer, limit=0):
     #SELECT * FROM Wishlist WHERE UserId=reviewer.id
-    return Wishlist.objects.filter(reviewer=reviewer).order_by('-review_date')
+    if limit < 1:
+        return Wishlist.objects.filter(reviewer=reviewer)
+    else:
+        return Wishlist.objects.filter(reviewer=reviewer)[:limit]
+
+def getLatestWishlistedMovies(limit=0):
+    if limit < 1:
+        return Wishlist.objects.all()
+    else:
+        return Wishlist.objects.all()[:limit]
 
 def getUsersWishingForMovie(movie):
     #SELECT * FROM Wishlist WHERE MovieId=movie.id

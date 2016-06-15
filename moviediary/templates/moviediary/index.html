@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Movie Diary{% endblock %}
+{% block links %}
+	{% if user.is_authenticated %}
+		<a href="/moviediary/profile/{{ user.username }}/">Profile</a>
+	{% endif %}
+{% endblock %}
 {% block content %}
 	<div id="wrapper">
 		<div id="body_container">

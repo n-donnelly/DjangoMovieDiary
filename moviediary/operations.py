@@ -132,6 +132,12 @@ def op_isMovieWishlisted(movie, reviewer):
     w = getWishlistMovieForReviewer(reviewer,movie)
     return w.exists()
 
+def op_updateReviewerProfile(reviewer, bio, love_movies, fav_genres):
+    reviewer.bio = bio
+    reviewer.love_movie_text = love_movies
+    reviewer.favourite_genres = fav_genres
+    reviewer.save()
+
 def op_normalizeMovieObject(movie):
     m = {}
     m['title'] = movie.title
@@ -146,13 +152,22 @@ def op_normalizeMovieObject(movie):
 def op_normalizeReviewObject(review):
     r = {}
     r['score'] = review.score
-    r['movie'] = review.movie.title
+    r['movie'] = op_normalizeMovieObject(review.movie)
     r['reviewer'] = review.reviewer.user.username
     r['review_text'] = review.review_text
     r['review_headline'] = review.review_headline
     r['review_date'] = review.review_date
     return r
     
+def op_normalizeReviewerObject(reviewer):
+    r= {}
+    r['user'] = reviewer.user.username
+    r['num_of_reviews'] = reviewer.num_of_reviews
+    r['bio'] = reviewer.bio
+    r['love_movie_text'] = reviewer.love_movie_text
+    r['favourite_genres'] = reviewer.favourite_genres
+    r['profile_pic'] = reviewer.profile_pic
+    return r
 
 #put test data into database    
 def op_fillTestData():
@@ -210,12 +225,12 @@ def op_fillTestData():
                     "Love. Commitment. Responsibility. There's nothing he won't run away from.",
                     '/s6ehbUfScpU0408ahsxCzlUwAzG.jpg')
     
-    op_addReview(r1, m1, "Review for user 1 and Civil War", '2016-05-04', 9, 'Really Good')
-    op_addReview(r2, m1, "Review for user 2 and Civil War", '2016-05-08', 7, 'Good')
-    op_addReview(r3,m2,"Review from user 3 for Hot Fuzz", '2009-09-01', 10, 'Rib-Tickling Action')
-    op_addReview(r3,m1,"Review from user 3 for Civil War", '2016-05-06', 8, 'Very Good')
-    op_addReview(r2,m3,"Review from user 2 for The Departed", '2007-02-14', 9, 'Thrilling')
-    op_addReview(r1,m5,"Review from user 1 for Run, Fatboy, Run", '2011-08-13', 7, 'Wholesome Fun')
+    op_addReview(r1, m1, "Review for user 1 and Civil War", '2016-05-04', 7, 'Really Good')
+    op_addReview(r2, m1, "Review for user 2 and Civil War", '2016-05-08', 5, 'Good')
+    op_addReview(r3,m2,"Review from user 3 for Hot Fuzz", '2009-09-01', 8, 'Rib-Tickling Action')
+    op_addReview(r3,m1,"Review from user 3 for Civil War", '2016-05-06', 6, 'Very Good')
+    op_addReview(r2,m3,"Review from user 2 for The Departed", '2007-02-14', 7, 'Thrilling')
+    op_addReview(r1,m5,"Review from user 1 for Run, Fatboy, Run", '2011-08-13', 6, 'Wholesome Fun')
     
     op_addMovieToWishlist(m4, r1)
     op_addMovieToWishlist(m2, r3)

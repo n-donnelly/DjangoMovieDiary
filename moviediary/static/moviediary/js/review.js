@@ -8,7 +8,7 @@ function submitFormAJAX(event) {
 	var ajax_data = form.serializeArray();
 	$.ajax({
 		type:'POST',
-		url:'review_submit/',
+		url:'/moviediary/review_submit/',
 		data:form.serializeArray(),
 		success: function (data) {
 			form.html(data['review_status']);

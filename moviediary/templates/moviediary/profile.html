@@ -6,6 +6,14 @@
 {% block title %}{{reviewer.user.username}}'s Profile{% endblock %}
 {% block  links %}
 	<span><a href="/moviediary/">Homepage</a></span>
+	{% if user.is_authenticated %}
+		{% if user.username != reviewer.user.username %}
+			<span><a href="/moviediary/profile/{{ user.username }}/">Profile</a></span>
+		{% else %}
+			<span><a href="/moviediary/profile/{{ user.username }}/wishlist/">Wishlist</a></span>
+			<span><a href="/moviediary/profile/{{ user.username }}/reviews/">Reviews</a></span>
+		{% endif %}
+	{% endif %}
 {% endblock %}
 {% block content %}
 	<div id="wrapper">
@@ -16,60 +24,142 @@
 		    <div class="clear"></div>
 		</div>
 		<div id="body_container">
-			{% load staticfiles %}
-			<div id="profile_image">
-				{% with 'moviediary/images/profile/'|add:reviewer.profile_pic as image_static %}
-					<img src='{% static image_static %}' alt="Profile Pic">
-				{% endwith %}
-			</div>
-			
 			<div id="user_area">
-				<div class="label_field_div">
-					<span class="span_label">Email:</span>
-					<span class="span_field">{{reviewer.user.email}}</span>
-				</div>
+				{% load staticfiles %}
+				<div id="profile_image">
+					{% with 'moviediary/images/profile/'|add:reviewer.profile_pic as image_static %}
+						<img src='{% static image_static %}' alt="Profile Pic">
+					{% endwith %}
+				</div>			
+				<div id="user_info">
+					<div class="label_field_div">
+						<span class="span_label">Email:</span>
+						<span class="span_field">{{reviewer.user.email}}</span>
+					</div>
+					
+					{% if reviewer.bio and reviewer.bio.strip %}
+					<div class="label_field_div">
+						<span class="span_label">Bio:</span>
+						<span class="span_field">{{reviewer.bio}}</span>
+					</div>
+					{% endif %}
+					
+					{% if reviewer.love_movie_text and reviewer.love_movie_text.strip %}
+					<div class="label_field_div">
+						<span class="span_label">Why I Love Movies:</span>
+						<span class="span_field">{{reviewer.love_movie_text}}</span>
+					</div>
+					{% endif %}
+					
+					{% if reviewer.love_movie_text and reviewer.love_movie_text.strip %}
+					<div class="label_field_div">
+						<span class="span_label">Favourite Types of Movies:</span>
+						<span class="span_field">{{reviewer.favourite_genres}}</span>
+					</div>
+					{% endif %}
+					
+					<div class="label_field_div">
+						<span class="span_label">Number of Reviews:</span>
+						<span class="span_field">{{reviewer.num_of_reviews}}</span>
+					</div>
 				
-				{% if reviewer.bio and reviewer.bio.strip %}
-				<div class="label_field_div">
-					<span class="span_label">Bio:</span>
-					<span class="span_field">{{reviewer.bio}}</span>
-				</div>
+				{% if user.is_authenticated and user.username == reviewer.user.username %}
+					<a class="movie_action_btn" id="bio_btn">Edit Your Profile</a>
+					<form id="profile_form" action="/moviediary/profile/{{reviewer.user.username}}/profile_edit/" method="post" hidden>{% csrf_token %}
+						<div id="bio_text_area">
+							<div id="label_div">
+								<span class="span_label">Bio</span>
+							</div>
+							<div id="review_area_div">
+								<textarea rows="8" name="bio" cols="72" maxlength="1000">{{reviewer.bio}}</textarea>
+							</div>
+						</div>
+						
+						<div id="love_text_area">
+							<div id="label_div">
+								<span class="span_label">Why do you love movies?</span>
+							</div>
+							<div id="review_area_div">
+								<textarea rows="8" name="love_movies" cols="72" maxlength="1000">{{reviewer.love_movie_text}}</textarea>
+							</div>
+						</div>
+						
+						<div id="genres_text_area">
+							<div id="label_div">
+								<span class="span_label">What are your favourite types of movies?</span>
+							</div>
+							<div id="review_area_div">
+								<textarea rows="4" name="genre" cols="72" maxlength="1000">{{reviewer.favourite_genres}}</textarea>
+							</div>
+						</div>
+						<input type="submit" value="Submit Change">
+					</form>
+					
 				{% endif %}
-				
-				{% if reviewer.love_movie_text and reviewer.love_movie_text.strip %}
-				<div class="label_field_div">
-					<span class="span_label">Why I Love Movies:</span>
-					<span class="span_field">{{reviewer.love_movie_text}}</span>
-				</div>
-				{% endif %}
-				
-				{% if reviewer.love_movie_text and reviewer.love_movie_text.strip %}
-				<div class="label_field_div">
-					<span class="span_label">Favourite Types of Movies:</span>
-					<span class="span_field">{{reviewer.favourite_genres}}</span>
-				</div>
-				{% endif %}
-				
-				<div class="label_field_div">
-					<span class="span_label">Number of Reviews:</span>
-					<span class="span_field">{{reviewer.num_of_reviews}}</span>
 				</div>
 			</div>
-			
 			<div id="wishlist_area" class="larger_area">
-				{% for movie in wishlist.wish_movies.all %}
-					<div class="movie_view">
-						movie.title
-					</div>
-				{% endfor %}
+				{% if wishlist %}
+					<span class="area_headline">Your Wishlist of Movies</span>
+					<ul id="wishlist_list">
+						{% for movie in wishlist %}
+							<li>
+							<div class="movie_info">
+								<div class='movie_image'>
+									<img src="http://image.tmdb.org/t/p/w500{{ movie.image_url }}">
+								</div>
+								<div class="details">
+									<a class="movie_title" href="/moviediary/movie/{{ movie.ext_id }}/">{{movie.title}}</a>
+									<span class="movie_release">{{movie.release_date}}</span>
+									<span class="tagline">{{movie.tagline}}</span>
+									<div class="stars_div">
+										{% if movie.average_review_score > 0 %}
+											<span class="stars_label">Average Review:</span>
+											<div class="rev_stars">{{movie.average_review_score}}</div>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+							</li>
+						{% endfor %}
+					</ul>
+					<a href="/moviediary/profile/{{ reviewer.user.username }}/wishlist/" class="profile_area_link">View Wishlist</a>
+				{% endif %}
 			</div>
 			
 			<div id="review_area" class="larger_area">
+				{% if reviews %}
+				<span class="area_headline">Your Latest Reviews</span>
+				<ul id="review_list">
 				{% for review in reviews %}
-					<div class="review_view">
-						review.movie.title
-					</div>
+					<li>
+						<div class='movie_info'>
+							<div class='movie_image'>
+								<img src="http://image.tmdb.org/t/p/w500{{ review.movie.image_url }}">
+							</div>
+							<div class="details">
+									<a class="movie_title" href="/moviediary/movie/{{ review.movie.ext_id }}/">{{review.movie.title}}</a>
+								<span class="movie_release">{{review.movie.release_date}}</span>
+								<span class="tagline">{{review.movie.tagline}}</span>
+								<div class="stars_div">
+									{% if movie.average_review_score > 0 %}
+										<span class="stars_label">Average Review:</span>
+										<div class="rev_stars">{{movie.average_review_score}}</div>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+						<div class="review_view">
+							<span class="rev_headline">{{review.review_headline}}</span>
+							<div class="rev_stars">{{review.score}}</div>
+							<span class="rev_date">{{review.review_date}}</span>
+							<p class="rev_text">{{review.review_text}}</p>
+						</div>
+					</li>
 				{% endfor %}
+				</ul>
+				<a href="/moviediary/profile/{{ reviewer.user.username }}/reviews/" class="profile_area_link">View All Reviews</a>
+				{% endif %}
 			</div>
 			
 			<div id="following_revs_area" class="larger_area">
@@ -88,5 +178,6 @@
 {% endblock %}
 {% block scripts %}
 {% load staticfiles %}
+<script src="{% static 'moviediary/js/tmdb_loader.js' %}"></script>
 <script src="{% static 'moviediary/js/profile.js' %}"></script>
 {% endblock %}

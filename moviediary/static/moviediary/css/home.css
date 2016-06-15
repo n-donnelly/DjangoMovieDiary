@@ -263,6 +263,7 @@ a.movie_action_btn:hover {
 
 .rev_headline {
 	font-weight:bold;
+	font-size:larger;
 }
 
 #movies_list li #movie_info span.rev_date {

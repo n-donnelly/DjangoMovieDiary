@@ -43,7 +43,7 @@ class Review(models.Model):
     second_rev_date = models.DateField('Second Impressions Date', default=datetime.date.today)
     
     def __unicode__(self):
-        return u'%s reviewing %s' % (self.user.username, self.movie.title)
+        return u'%s reviewing %s' % (self.reviewer.user.username, self.movie.title)
     
 class Following(models.Model):
     follower = models.ForeignKey(Reviewer, on_delete=models.CASCADE, related_name='follower')

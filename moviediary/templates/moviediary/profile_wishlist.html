@@ -3,7 +3,7 @@
 {% load staticfiles %}
 	<link rel="stylesheet" href="{% static 'moviediary/css/profile.css' %}">
 {% endblock %}
-{% block title %}{{reviewer.user.username}}'s Reviews{% endblock %}
+{% block title %}{{reviewer.user.username}}'s Wishlist{% endblock %}
 {% block  links %}
 	<span><a href="/moviediary/">Homepage</a></span>
 	{% if user.is_authenticated %}
@@ -16,38 +16,32 @@
 	<div id="wrapper">
 		<div id="header_container">
 		    <div id="header_left">
-		        <h1>{{reviewer.user.username}}'s Reviews</h1>
+		        <h1>{{reviewer.user.username}}'s Wishlist</h1>
 		        <a class='prof_link' href="/moviediary/profile/{{ reviewer.user.username }}/">Return to {{reviewer.user.username}}'s Profile</a>
 		    </div>
 		    <div class="clear"></div>
 		</div>
 		<div id="body_container">
-			<div id="review_area" class="larger_area">
-				{% if reviews %}
-					<ul id="review_list">
-						{% for review in reviews %}
+			<div id="wishlist_area" class="larger_area">
+				{% if wishlist %}
+					<ul id="wishlist_list">
+						{% for movie in wishlist %}
 							<li>
 							<div class="movie_info">
 								<div class='movie_image'>
-									<img src="http://image.tmdb.org/t/p/w500{{ review.movie.image_url }}">
+									<img src="http://image.tmdb.org/t/p/w500{{ movie.image_url }}">
 								</div>
 								<div class="details">
-										<a class="movie_title" href="/moviediary/movie/{{ review.movie.ext_id }}/">{{review.movie.title}}</a>
-									<span class="movie_release">{{review.movie.release_date}}</span>
-									<span class="tagline">{{review.movie.tagline}}</span>
+										<a class="movie_title" href="/moviediary/movie/{{ movie.ext_id }}/">{{movie.title}}</a>
+									<span class="movie_release">{{movie.release_date}}</span>
+									<span class="tagline">{{movie.tagline}}</span>
 									<div class="stars_div">
-										{% if review.movie.average_review_score > 0 %}
+										{% if movie.average_review_score > 0 %}
 											<span class="stars_label">Average Review:</span>
-											<div class="rev_stars">{{review.movie.average_review_score}}</div>
+											<div class="rev_stars">{{movie.average_review_score}}</div>
 										{% endif %}
 									</div>
 								</div>
-							</div>
-							<div class="review_view">
-								<span class="rev_headline">{{review.review_headline}}</span>
-								<div class="rev_stars">{{review.score}}</div>
-								<span class="rev_date">{{review.review_date}}</span>
-								<p class="rev_text">{{review.review_text}}</p>
 							</div>
 							</li>
 						{% endfor %}
@@ -64,7 +58,7 @@
 	
 	{% if current_page != 1 %}
 		{% with current_page|add:"-1" as backpage %}
-			<a href="/moviediary/profile/{{reviewer.user.username}}/reviews/{{backpage}}/">&lt; Back</a>
+			<a href="/moviediary/profile/{{reviewer.user.username}}/wishlist/{{backpage}}/">&lt; Back</a>
 		{% endwith %}
 	{% endif %}
 	
@@ -73,14 +67,14 @@
 			{% if current_page == i_page %}
 				<a>{{i_page}}</a>
 			{% else %}
-				<a class="page_link" href="/moviediary/profile/{{reviewer.user.username}}/reviews/{{i_page}}/">{{i_page}}</span>
+				<a class="page_link" href="/moviediary/profile/{{reviewer.user.username}}/wishlist/{{i_page}}/">{{i_page}}</span>
 			{% endif %}
 		{% endwith %}
 	{% endfor %}
 	
 	{% if current_page != num_pages %}
 		{% with current_page|add:1 as nextpage %}
-			<a href="/moviediary/profile/{{reviewer.user.username}}/reviews/{{nextpage}}/">Next &gt;</a>
+			<a href="/moviediary/profile/{{reviewer.user.username}}/wishlist/{{nextpage}}/">Next &gt;</a>
 		{% endwith %}
 	{% endif %}
 
