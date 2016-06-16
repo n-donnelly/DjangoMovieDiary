@@ -1,17 +1,18 @@
-#movies_list li .movie_form div span.span_label {
+.movie_form div span.span_label {
 	display:inline-block;
 	font-weight:bold;
 	width: 10em;
 }
 
-#movies_list li .movie_form div #cal_picker {
+.movie_form div #cal_picker {
 	display:inline-block;
 }
 
 .movie_form {
-	float:left;
 	margin-top:40px;
 	margin-bottom:20px;
+	width:70%;
+	margin-left:10px;
 }
 
 .rate {
@@ -19,7 +20,7 @@
 	float:right;
 }
 
-#movies_list li .movie_form div#date_area {
+.movie_form div#date_area {
 	display:inline-block;
 }
 

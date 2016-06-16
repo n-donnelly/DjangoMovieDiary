@@ -1,5 +1,89 @@
 {% extends "base.html" %}
-{% block title %}Movie Diary{% endblock %}
+{% block css %}
+{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'moviediary/css/movie_page.css' %}">
+{% endblock %}
+{% block title %}{{ movie.title }}{% endblock %}
 {% block content %}
-<h1>Movie Page View</h1>
+<div id="wrapper">
+	<div id="header_container">
+		<div id="header_left">
+			<h1>{{movie.title}}</h1>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div id="body_container">
+		<div class="movie_info">
+			<div class="movie_image">
+				<img src="http://image.tmdb.org/t/p/w500{{ movie.image_url }}">
+			</div>
+			<div class="movie_deets">
+				<div id="release" class="movie_detail">{{ movie.release_date }}</div>
+				<div id="overview" class="movie_detail"></div>
+			</div>
+			<div class="extra_deets">
+				<div class="tmdb_extras"></div>
+				<div class="mebert_extras">
+					{% if movie.num_of_reviews > 0 %}
+						<div class="extras_div">
+							<span class="extras_label">Review Count:</span>
+							<span class="extras_val">{{ movie.num_of_reviews }}</span>
+						</div>
+						<div class="extras_div">
+							<span class="extras_label">Average Score:</span>
+							<div id="ave_star" class="rev_stars">{{ movie.average_review_score }}</div>
+						</div>
+						
+						{% if review %}
+						<div class="extras_div rev_extra">
+							<span class="rec_rev_label">Your Review</span>
+							<div class="review_view">
+								<span class="rev_headline">{{ review.review_headline }}</span>
+								<div class="rev_stars">{{ review.score }}</div>
+								<span class="rev_date">{{ review.review_date }}</span>
+								<p class="rev_text">{{ review.review_text }}</p>
+							</div>
+						</div>
+						{% else %}
+							<div class="extras_div">
+								<a class="review_btn movie_action_btn">Review this Movie</a>
+								{% if not wishlist %}
+									<a class="wish_btn movie_action_btn">Add to Wishlist</a>
+								{% endif %}
+							</div>
+						{% endif %}
+						
+						{% if recent_reviews %}
+							<div class="extras_div rev_extra">
+								<span class="rec_rev_label">Latest Reviews</span>
+								{% for rev in recent_reviews %}
+									<div class="review_view">
+										<a class="rev_username" href="/moviediary/profile/{{rev.reviewer}}/">{{rev.reviewer}}</a>
+										<span class="rev_headline">{{rev.review_headline}}</span>
+										<div class="rev_stars">{{rev.score}}</div>
+										<span class="rev_date">{{rev.review_date}}</span>
+										<p class="rev_text">{{ rev.review_text }}</p>
+									</div>
+								{% endfor %}
+							</div>
+						{% endif %}
+					{% endif %}
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+	var movie_id = "{{movie.ext_id}}";
+	var movie_title = "{{movie.title}}";
+	var movie_release = "{{movie.release_date}}";
+	var movie_poster_url = "{{movie.image_url}}";
+</script>
+{% load staticfiles %}
+<script src="{% static 'moviediary/js/tmdb.js' %}"></script>
+<script src="{% static 'moviediary/js/tmdb_loader.js' %}"></script>
+<script src="{% static 'moviediary/js/movie_page.js' %}"></script>
 {% endblock %}

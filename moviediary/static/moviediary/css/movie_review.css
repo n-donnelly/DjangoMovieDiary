@@ -1,0 +1,40 @@
+.movie_detail {
+	padding:2px;
+}
+
+.rev_wrapper_label {
+	font-weight:bold;
+	font-size:x-large;
+	clear:both;
+}
+
+div.rev_stars {
+	display:inline-block;
+	border:0;
+	color:#ffd700;
+	padding:0px;
+	width:25%;
+}
+
+.details div.rev_stars {
+	margin-left:0.5em;
+}
+
+.rev_stars span.star {
+	display:inline-block;
+	padding: 0;
+}
+
+.rev_stars span.star:before {
+	content: "\f005";
+	margin:0;
+	font-size: 1.6rem;
+	display:inline-block;
+	font-family: FontAwesome;
+	padding: .3rem .2rem;
+}
+
+.rev_stars span.half:before {
+	content: "\f089";
+	padding-right:0;
+}

@@ -4,6 +4,7 @@ Created on 2 Apr 2016
 @author: Neil Donnelly
 '''
 import random
+import time
 import uuid
 
 from django.contrib.auth.models import User
@@ -12,6 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from moviediary.db_operations import getMovieWithTMDB_Id, getUserReviewForMovie, \
     removeWishlist, getWishlistMovieForReviewer, getReviewsForMovie
 from moviediary.models import Reviewer, Movie, Review, Wishlist, Following
+
 
 #List of all the profile pics so they can be randomly assigned during sign up for new users
 profile_pics = ['ace.jpg',
@@ -82,6 +84,10 @@ def op_getReview(movie, reviewer):
 def op_getMostRecentReviewsForMovie(movie):
     return getReviewsForMovie(movie)[:3]
 
+#get recent reviews for movie
+def op_getReviewsForMovie(movie):
+    return getReviewsForMovie(movie)
+
 #create a review for a movie from given reviewer, update reviewer and movie
 def op_addReview(reviewer, movie, review_text, review_date, score, headline):
     #check if the user has already written a review for this Movie
@@ -141,7 +147,9 @@ def op_updateReviewerProfile(reviewer, bio, love_movies, fav_genres):
 def op_normalizeMovieObject(movie):
     m = {}
     m['title'] = movie.title
-    m['release_date'] = movie.release_date
+    
+    rel_date_obj = time.strptime(str(movie.release_date), "%Y-%m-%d")
+    m['release_date'] = time.strftime("%d %B %Y", rel_date_obj)
     m['ext_id'] = movie.ext_id
     m['tagline'] = movie.tagline
     m['image_url'] = movie.image_url

@@ -116,7 +116,7 @@ body {
     position: relative;
 }
 
-#movies_list .movie_image {
+.movie_image {
 	float:left;
 	width:20%;
 	height:auto;
@@ -124,39 +124,35 @@ body {
 	margin-right:1%;
 }
 
-#movies_list .movie_image img{
+.movie_image img{
 	height: 100%;
 	width: 100%;
 }
 
-#movies_list .movie_deets {
+.movie_deets {
     display: inline-block;
     float: left;
     width:75%;
 }
 
-#movie_list #chosen_movie {
-	
-}
-
-#movies_list .movie_deets span:first-of-type{
+.movie_deets span:first-of-type{
 	font-size: 25px;
 	font-weight: 500;
 }
 
-#movies_list .movie_deets #movie_info span:first-of-type{
+.movie_deets .movie_info span:first-of-type{
 	font-size: 16px;
 	font-weight: inherit;
 }
 
-#movies_list .extra_deets {
+.extra_deets {
 	float:left;
 	display:inline-block;
 	width:75%;
 	margin-top:12px;
 }
 
-#movies_list li span {
+span {
     display: block;
     padding: 5px;
 }
@@ -211,13 +207,14 @@ a.movie_action_btn:hover {
 	cursor:pointer;
 }
 
-#movies_list li #movie_info .extra_deets .extras_div .extras_label {
+.movie_info .extra_deets .extras_div .extras_label {
 	display:inline-block;
-	width:6em;
+	width:8em;
 	font-weight:bold;	
+	padding:5px;
 }
 
-#movies_list li #movie_info .extra_deets .extras_div .extras_val {
+.movie_info .extra_deets .extras_div .extras_val {
 	display:inline-block;
 	width:80%
 }
@@ -249,9 +246,9 @@ a.movie_action_btn:hover {
 	padding-right:0;
 }
 
-#movies_list li #movie_info .extra_deets .extras_div .rec_rev_label {
+.movie_info .extra_deets .extras_div .rec_rev_label {
 	font-weight:bold;
-	font-size:x-large;
+	font-size:larger;
 }
 
 .review_view {
@@ -264,9 +261,11 @@ a.movie_action_btn:hover {
 .rev_headline {
 	font-weight:bold;
 	font-size:larger;
+	display:block;
+	padding:5px;
 }
 
-#movies_list li #movie_info span.rev_date {
+.movie_info span.rev_date {
 	display:inline-block;
 	float:right;
 }

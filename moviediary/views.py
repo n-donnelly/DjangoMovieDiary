@@ -18,7 +18,7 @@ from moviediary.operations import op_signup, op_addMovie, \
     op_removeMovieFromWishlist, op_addReview, op_addMovieToWishlist, op_getMovie, \
     op_getReview, op_isMovieWishlisted, op_fillTestData, \
     op_getMostRecentReviewsForMovie, op_normalizeMovieObject, \
-    op_normalizeReviewObject, op_updateReviewerProfile
+    op_normalizeReviewObject, op_updateReviewerProfile, op_getReviewsForMovie
 
 
 def index(request):
@@ -239,34 +239,56 @@ def add_movie_to_wishlist(request):
     else:
         return JsonResponse({"wish_status":"Not logged in"});
     
-def get_movie_info(request):
+def get_movie_reviews(request, movie_id=0):
     context = {}
     
+    m = get_object_or_404(Movie, ext_id=movie_id)
+    
+    context['movie'] = op_normalizeMovieObject(m)
+    
+    revs = []
+    reviews = op_getReviewsForMovie(m)
+    for r in reviews:
+        revs.append(op_normalizeReviewObject(r))
+    
+    if len(revs) > 0:
+        context['recent_reviews'] = revs
+    
+    return render(request, 'moviediary/movie_review.html', context)
+    
+def get_movie_info(request, movie_id=0):
+    context = {}
+    
+    m_id = request.GET.get('movie_id')
     if request.is_ajax():
-        m_id = request.GET.get('movie_id')
         m = op_getMovie(m_id)
         if type(m) is str:
             return JsonResponse({'status':'error - no movie found with ID'})
-        context['movie'] = op_normalizeMovieObject(m)
-        context['status'] = "Success - Found movie"
+    else:
+        m = get_object_or_404(Movie, ext_id=movie_id)
         
-        ctxt_revs = []
-        reviews = op_getMostRecentReviewsForMovie(m)
-        for r in reviews:
-            ctxt_revs.append(op_normalizeReviewObject(r))
-        
-        if len(ctxt_revs) > 0:
-            context['recent_reviews'] = ctxt_revs
-        
-        if request.user.is_authenticated():
-            reviewer = get_object_or_404(Reviewer, user=request.user)
-            r = op_getReview(m,reviewer)
-            if not isinstance(r, types.StringTypes):
-                context['review'] = op_normalizeReviewObject(r)
-            context['wishlist'] = op_isMovieWishlisted(m,reviewer)
+    context['movie'] = op_normalizeMovieObject(m)
+    context['status'] = "Success - Found movie"
+    
+    ctxt_revs = []
+    reviews = op_getMostRecentReviewsForMovie(m)
+    for r in reviews:
+        ctxt_revs.append(op_normalizeReviewObject(r))
+    
+    if len(ctxt_revs) > 0:
+        context['recent_reviews'] = ctxt_revs
+    
+    if request.user.is_authenticated():
+        reviewer = get_object_or_404(Reviewer, user=request.user)
+        r = op_getReview(m,reviewer)
+        if not isinstance(r, types.StringTypes):
+            context['review'] = op_normalizeReviewObject(r)
+        context['wishlist'] = op_isMovieWishlisted(m,reviewer)
+    
+    if request.is_ajax():
         return JsonResponse(context)
     else:
-        raise Http404
+        return render(request, 'moviediary/movie_page.html', context)
 
 def edit_profile(request, username=''):
     if request.user.is_authenticated() and request.user.username==username:

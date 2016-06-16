@@ -1,16 +1,5 @@
 $(document).ready(function(){
-	$(".rev_stars").each(function(i){
-		var score = $(this).html();
-		revStr = "";
-		score = Math.round(parseFloat(score));
-		for(var i = 0; i < (score-1)/2; i++){
-			revStr += "<span class='star'></span>";
-		}
-		if (parseInt(score)%2!=0) {
-			revStr += "<span class='star half'></span>";
-		}
-		$(this).html(revStr);
-	})
+	loadStarsDiv();
 })
 
 $('#test_data_btn').on('click', function(event){

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block css %}
+{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'moviediary/css/movie_review.css' %}">
+{% endblock %}
+{% block title %}{{ movie.title }} Reviews{% endblock %}
+{% block content %}
+<div id="wrapper">
+	<div id="header_container">
+		<div id="header_left">
+			<h1>{{movie.title}} Reviews</h1>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div id="body_container">
+		<div class="movie_info">
+			<div class="movie_image">
+				<img src="http://image.tmdb.org/t/p/w500{{ movie.image_url }}">
+			</div>
+			<div class="movie_deets">
+				<div id="release" class="movie_detail">{{ movie.release_date }}</div>
+				<div id="tagline" class="movie_detail">{{ movie.tagline }}</div>
+				<div id="ave_star" class="rev_stars">{{ movie.average_review_score }}</div>
+			</div>
+			{% if recent_reviews %}
+				<div class="revew_wrapper">
+					<span class="rev_wrapper_label">Reviews</span>
+					{% for rev in recent_reviews %}
+						<div class="review_view">
+							<a class="rev_username" href="/moviediary/profile/{{rev.reviewer}}/">{{rev.reviewer}}</a>
+							<span class="rev_headline">{{rev.review_headline}}</span>
+							<div class="rev_stars">{{rev.score}}</div>
+							<span class="rev_date">{{rev.review_date}}</span>
+							<p class="rev_text">{{ rev.review_text }}</p>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}			
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% load staticfiles %}
+ <script src="{% static 'moviediary/js/movie_reviews.js' %}"></script>
+{% endblock %}

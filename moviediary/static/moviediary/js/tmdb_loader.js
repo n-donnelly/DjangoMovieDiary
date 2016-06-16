@@ -12,6 +12,14 @@ $(document).ready(function(){
 		searchMovieTitle();
 	}
 })
+
+function retrieveTMDBMovie(id, callback) {
+	tmdb.call('/movie/' + id,
+		{
+			"append_to_response":"credits"
+		},
+		callback)
+}
 	
 function loadResults(data){
 	createResultsString(data, function(results){
@@ -36,12 +44,7 @@ function loadForm(event) {
 		//Needs to be fixed so the locale can be changed per user and the client sends the right format so the server doesn't need to parse
 		$("#datepicker").datepicker({"dateFormat":"dd MM yy"});
 		
-		var movie_id = $(event.target).parent().parent().parent().attr('id').split('_')[1];
-		
-		form.find("#movie_title").val(current_movie_list[movie_id].title);
-		form.find("#movie_id").val(current_movie_list[movie_id].id);
-		form.find("#poster_url").val(current_movie_list[movie_id].poster_path);
-		form.find("#release_date").val(current_movie_list[movie_id].release_date);
+		fillHiddenForm(event.target, form);
 		
 		//$(event.target).parent().find(".movie_form").hide().slideDown(1000);
 	})
@@ -113,24 +116,27 @@ function expandMovie(event) {
 					var m_title = movie_li.find("#title").html();
 					var newTitleStr = "<a href='/moviediary/movie/"+movie['id']+"/'>" + m_title + "</a>";
 					movie_li.find("#title").html(newTitleStr);
+
+					loadStarsForOneDiv(movie_li.children(":first").find(".mebert_extras").find("#ave_star"));
 			}
 		})
 		
-		tmdb.call('/movie/' + movie['id'],
-			{
-				"append_to_response":"credits"
-			},
-			function(data) {
-				movie_li.children(":first").find(".tmdb_extras").append(buildExtraDetailsString(data));
-				$(".review_btn").on("click", loadForm);
-				$(".wish_btn").on("click", addToWishlist);
-			})
+		
+		retrieveTMDBMovie(movie['id'], function(data){
+			loadTMDBExtrasDiv(movie_li.children(":first").find(".tmdb_extras"), data, false)
+		})
 	}
 	
 	movie_li.find(".movie_image").off("click");
 	movie_li.find(".movie_deets").off("click");
 	movie_li.find(".movie_image").on("click", hideMovieExtras);
 	movie_li.find(".movie_deets").on("click", hideMovieExtras);
+}
+
+function loadTMDBExtrasDiv(tmdbDiv, data, full_details) {
+	$(tmdbDiv).append(buildExtraDetailsString(data, full_details));
+	$(tmdbDiv).parent().find(".review_btn").on("click", loadForm);
+	$(tmdbDiv).parent().find(".wish_btn").on("click", addToWishlist);
 }
 
 function hideMovieExtras(event) {
@@ -146,16 +152,16 @@ function hideMovieExtras(event) {
 function buildMebertsExtraString(info) {
 	var mebertStr = "";
 	var arr = {
-			'Number of Reviews':info.movie.num_of_reviews,
-			'Average Score':info.movie.average_review_score
+			'Number of Reviews':info.movie.num_of_reviews
 	}
 	mebertStr += buildExtrasString(arr);
 	
+	mebertStr += "<div class='extras_div'><span class='extras_label'>Average Score:</span><div class='rev_stars' id='ave_star'>" + info.movie.average_review_score + "</div>";
+	
 	if(info.review) {
 		mebertStr += "<div class='extras_div'>" + buildReviewDiv(info.review, true) + "</div>";
-	}
-	
-	if(info.recent_reviews){
+	} 
+	else if(info.recent_reviews){
 		mebertStr += "<div class='extras_div'><span class='rec_rev_label'>Latest Reviews</span>";
 		for(r in info.recent_reviews){
 			mebertStr += buildReviewDiv(info.recent_reviews[r], false);
@@ -200,19 +206,23 @@ function buildReviewDiv(rev, user_review) {
 	return revStr;
 }
 
-function buildExtraDetailsString(movie) {
+function buildExtraDetailsString(movie, full_details) {
 	extraStr = "";
 	
 	var arr = {
 			'Tagline':movie.tagline,
 			'Runtime':movie.runtime,
 			'Genres':buildStringFromArr(movie.genres),
-			'Directors':buildDirectorString(movie.credits.crew),
-			'Writers':buildWritersString(movie.credits.crew),
-			'Cast':buildCastString(movie.credits.cast),
-			'Production':buildStringFromArr(movie.production_companies),
 			'TMDB Vote':movie.vote_average
 	}
+	
+	if (full_details) {
+		arr['Directors'] = buildDirectorString(movie.credits.crew);
+		arr['Writers'] = buildWritersString(movie.credits.crew);
+		arr['Cast'] = buildCastString(movie.credits.cast);
+		arr['Production'] = buildStringFromArr(movie.production_companies);
+	}
+	
 	extraStr += buildExtrasString(arr)
 	
 	return extraStr;
@@ -221,9 +231,13 @@ function buildExtraDetailsString(movie) {
 function buildCastString(cast){
 	var castString = "";
 	for(var i = 0; i < cast.length && i < 5; i++) {
-		castString += cast[i].name + "(" + cast[i].character + "), ";
+		castString += "<div class='cast_member'>";
+		castString += "<div class='actor'>" + cast[i].name + "</div>";
+		var charStr = cast[i].character.replace("/", "</span><span>")
+		castString += "<div class='character'><span>" + charStr + "</span></div>";
+		castString += "</div>"
 	}
-	return castString.substring(0, castString.length-2);
+	return castString;
 }
 
 function buildDirectorString(crew){
@@ -258,7 +272,7 @@ function searchMovieTitle() {
 	tmdb.call('/search/movie', 
 			{
 				"query":q,
-				include_adult: true
+				include_adult: false
 			},
 			loadResults)
 }
@@ -304,7 +318,7 @@ function addToWishlist(event) {
 
 function buildItem(movie, index) {
 	
-	var builtStr = "<li id='movie_" + index + "'><div id='movie_info'><div class='movie_image'>";
+	var builtStr = "<li id='movie_" + index + "'><div class='movie_info'><div class='movie_image'>";
 	builtStr += getImageUrl(movie);
 	builtStr += "</div><div class='movie_deets'>";
 	var arr = {'title' : movie.title,
@@ -340,9 +354,9 @@ function buildString (elemArr) {
 }
 
 function buildExtrasString (arr) {
-	var itemStart = "<div class='extras_div'><span class='extras_label'>";
-	var itemMid = "</span><span class='extras_val'>";
-	var itemEnd = "</span></div>";
+	var itemStart = "<div class='extras_div'><div class='extras_label'>";
+	var itemMid = "</div><div class='extras_val'>";
+	var itemEnd = "</div></div>";
 	
 	var retStr = "";
 	for (var lab in arr) {
