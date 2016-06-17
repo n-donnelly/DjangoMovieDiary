@@ -8,7 +8,7 @@
 <div id="wrapper">
 	<div id="header_container">
 		<div id="header_left">
-			<h1>{{movie.title}}</h1>
+			<h1 id="title">{{movie.title}}</h1>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -26,52 +26,61 @@
 				<div class="mebert_extras">
 					{% if movie.num_of_reviews > 0 %}
 						<div class="extras_div">
-							<span class="extras_label">Review Count:</span>
-							<span class="extras_val">{{ movie.num_of_reviews }}</span>
+							<div class="extras_label">Review Count:</div>
+							<div class="extras_val">{{ movie.num_of_reviews }}</div>
 						</div>
 						<div class="extras_div">
-							<span class="extras_label">Average Score:</span>
+							<div class="extras_label star_label">Average Score:</div>
 							<div id="ave_star" class="rev_stars">{{ movie.average_review_score }}</div>
 						</div>
-						
-						{% if review %}
-						<div class="extras_div rev_extra">
-							<span class="rec_rev_label">Your Review</span>
-							<div class="review_view">
-								<span class="rev_headline">{{ review.review_headline }}</span>
-								<div class="rev_stars">{{ review.score }}</div>
-								<span class="rev_date">{{ review.review_date }}</span>
-								<p class="rev_text">{{ review.review_text }}</p>
-							</div>
-						</div>
-						{% else %}
-							<div class="extras_div">
-								<a class="review_btn movie_action_btn">Review this Movie</a>
-								{% if not wishlist %}
-									<a class="wish_btn movie_action_btn">Add to Wishlist</a>
-								{% endif %}
-							</div>
-						{% endif %}
-						
-						{% if recent_reviews %}
-							<div class="extras_div rev_extra">
-								<span class="rec_rev_label">Latest Reviews</span>
-								{% for rev in recent_reviews %}
-									<div class="review_view">
-										<a class="rev_username" href="/moviediary/profile/{{rev.reviewer}}/">{{rev.reviewer}}</a>
-										<span class="rev_headline">{{rev.review_headline}}</span>
-										<div class="rev_stars">{{rev.score}}</div>
-										<span class="rev_date">{{rev.review_date}}</span>
-										<p class="rev_text">{{ rev.review_text }}</p>
-									</div>
-								{% endfor %}
-							</div>
-						{% endif %}
 					{% endif %}
 				</div>
 			</div>
-			
-		</div>
+			<div class="reviews_div">
+				{% if movie.num_of_reviews > 0 %}
+					{% if review %}
+					<div class="extras_div rev_extra">
+						<span class="rec_rev_label">Your Review</span>
+						<div class="review_view">
+							<span class="rev_headline">{{ review.review_headline }}</span>
+							<div class="rev_stars">{{ review.score }}</div>
+							<span class="rev_date">{{ review.review_date }}</span>
+							<p class="rev_text">{{ review.review_text }}</p>
+						</div>
+					</div>
+					{% else %}
+						<div class="extras_div">
+							<a class="review_btn movie_action_btn">Review this Movie</a>
+							{% if not wishlist %}
+								<a class="wish_btn movie_action_btn">Add to Wishlist</a>
+							{% endif %}
+						</div>
+					{% endif %}
+					
+					{% if recent_reviews %}
+						<div class="extras_div rev_extra">
+							<span class="rec_rev_label">Latest Reviews</span>
+							{% for rev in recent_reviews %}
+								<div class="review_view">
+									<a class="rev_username" href="/moviediary/profile/{{rev.reviewer}}/">{{rev.reviewer}}</a>
+									<span class="rev_headline">{{rev.review_headline}}</span>
+									<div class="rev_stars">{{rev.score}}</div>
+									<span class="rev_date">{{rev.review_date}}</span>
+									<p class="rev_text">{{ rev.review_text }}</p>
+								</div>
+							{% endfor %}
+							<a id="review_link" href="/moviediary/movie/{{movie.ext_id}}/reviews/">See All Reviews</a>
+						</div>
+					{% endif %}
+				{% else %}
+					<div class="extras_div">
+						<a class="review_btn movie_action_btn">Review this Movie</a>
+						{% if not wishlist %}
+							<a class="wish_btn movie_action_btn">Add to Wishlist</a>
+						{% endif %}
+					</div>
+				{% endif %}
+			</div>	
 	</div>
 </div>
 {% endblock %}

@@ -1,4 +1,7 @@
+from django.db.models.aggregates import Count
+
 from moviediary.models import Movie, Review, Following, Wishlist
+
 
 def getMovieWithTMDB_Id(tmdb_id):
     #SELECT * FROM Movie WHERE ext_id=tmdb_id
@@ -45,6 +48,9 @@ def getLatestWishlistedMovies(limit=0):
 def getUsersWishingForMovie(movie):
     #SELECT * FROM Wishlist WHERE MovieId=movie.id
     return Wishlist.objects.filter(movie=movie)
+
+def getMostWishlistedMovie():
+    return Wishlist.objects.all().annotate(m_count=Count('movie')).order_by('-m_count')
 
 def getLatestAddedMovies(limit):
     #SELECT * FROM Movie ORDER_BY release_date DESC

@@ -17,7 +17,8 @@
 			xhr.ontimeout = function () {
 				throw("Request timed out: " + url +" "+ params_str);
 			};
-			xhr.open("GET", tmdb.base_uri + url + "?" + params_str, true);
+			var str = tmdb.base_uri + url + "?" + params_str;
+			xhr.open("GET", str, true);
 			xhr.setRequestHeader('Accept', 'application/json');
 			xhr.responseType = "text";
 			xhr.onreadystatechange = function () {

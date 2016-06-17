@@ -10,10 +10,7 @@ $('#title_search_txt').keydown(function(event){
 })
 
 function trySearch(){
-	if($("#movies_list").length)
-		searchMovieTitle();
-	else
-		$("#searchbar").submit();
+	$("#searchbar").submit();
 }
 
 function loadStarsDiv(){

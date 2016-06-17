@@ -47,6 +47,7 @@ body {
 #navbar_left {
     float: left;
     height:64px;
+    color:black;
 }
 
 #navbar_right {
@@ -135,9 +136,17 @@ body {
     width:75%;
 }
 
-.movie_deets span:first-of-type{
+#title {
 	font-size: 25px;
-	font-weight: 500;
+	font-weight: 500;	
+	color:black;
+	text-decoration:none;
+	font-weight:bold;
+}
+
+#title:hover {
+	text-decoration:underline;
+	color:blue;
 }
 
 .movie_deets .movie_info span:first-of-type{
@@ -200,6 +209,7 @@ a.movie_action_btn {
 	right:2em;
 	text-decoration:underline;
 	color:blue;
+	position:absolute;
 }
 
 a.movie_action_btn:hover {
@@ -211,7 +221,11 @@ a.movie_action_btn:hover {
 	display:inline-block;
 	width:8em;
 	font-weight:bold;	
-	padding:5px;
+	float:left;
+}
+
+.movie_info .extra_deets .extras_div {
+	margin:5px;
 }
 
 .movie_info .extra_deets .extras_div .extras_val {
@@ -224,7 +238,7 @@ a.movie_action_btn:hover {
 	border:0;
 	color:#ffd700;
 	padding:0px;
-	width:25%;
+	width:8em;
 }
 
 #movies_list li div.rev_stars span.star {
@@ -274,9 +288,14 @@ a.movie_action_btn:hover {
 	display:block;
 	font-weight:bold;
 	font-size:large;
+	padding:5px;
 }
 
 .rev_text {
 	margin: 0;
 	padding: 5px;
+}
+
+#navbar span {
+	display:inline-block;
 }

@@ -18,11 +18,29 @@ from moviediary.operations import op_signup, op_addMovie, \
     op_removeMovieFromWishlist, op_addReview, op_addMovieToWishlist, op_getMovie, \
     op_getReview, op_isMovieWishlisted, op_fillTestData, \
     op_getMostRecentReviewsForMovie, op_normalizeMovieObject, \
-    op_normalizeReviewObject, op_updateReviewerProfile, op_getReviewsForMovie
+    op_normalizeReviewObject, op_updateReviewerProfile, op_getReviewsForMovie,\
+    op_getRecentReviews, op_getTopWishlistedMovies
 
 
 def index(request):
     context = {}
+    
+    rec_revs = []
+    reviews = op_getRecentReviews()
+    for r in reviews:
+        rec_revs.append(op_normalizeReviewObject(r))
+        
+    if len(rec_revs) > 0:
+        context['recent_reviews'] = rec_revs;
+        
+    wish_movs = []
+    w_movies = op_getTopWishlistedMovies()
+    for w in w_movies:
+        wish_movs.append(op_normalizeMovieObject(w.movie))
+        
+    if len(wish_movs) > 0:
+        context['top_wishlist'] = wish_movs;    
+    
     return render(request, 'moviediary/homepage.html', context)
 
 def search(request):
@@ -265,7 +283,12 @@ def get_movie_info(request, movie_id=0):
         if type(m) is str:
             return JsonResponse({'status':'error - no movie found with ID'})
     else:
-        m = get_object_or_404(Movie, ext_id=movie_id)
+        m = op_getMovie(movie_id)
+        if type(m) is str:
+            id_obj = {'ext_id':movie_id}
+            context['movie'] = id_obj
+            return render(request, 'moviediary/movie_page.html', context)
+            
         
     context['movie'] = op_normalizeMovieObject(m)
     context['status'] = "Success - Found movie"

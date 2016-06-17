@@ -235,6 +235,7 @@ function buildCastString(cast){
 		castString += "<div class='actor'>" + cast[i].name + "</div>";
 		var charStr = cast[i].character.replace("/", "</span><span>")
 		castString += "<div class='character'><span>" + charStr + "</span></div>";
+		castString += "<hr>";
 		castString += "</div>"
 	}
 	return castString;
@@ -321,8 +322,8 @@ function buildItem(movie, index) {
 	var builtStr = "<li id='movie_" + index + "'><div class='movie_info'><div class='movie_image'>";
 	builtStr += getImageUrl(movie);
 	builtStr += "</div><div class='movie_deets'>";
-	var arr = {'title' : movie.title,
-			'release' : getDateString(new Date(movie.release_date)),
+	builtStr += "<a id='title' href='/moviediary/movie/"+movie.id+"/'>"+movie.title+"</a>";
+	var arr = {'release' : getDateString(new Date(movie.release_date)),
 			'overview' : movie.overview}
 	builtStr += buildString(arr) + '</div>';
 	

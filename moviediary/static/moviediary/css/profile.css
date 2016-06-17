@@ -110,7 +110,7 @@ div.rev_stars {
 	border:0;
 	color:#ffd700;
 	padding:0px;
-	width:25%;
+	width:8em;
 }
 
 .details div.rev_stars {
@@ -138,6 +138,10 @@ div.rev_stars {
 
 .rev_headline {
 	display:block;
+}
+
+.num_review_div span {
+	display:inline-block;
 }
 
 .rev_date {
@@ -173,4 +177,8 @@ div.rev_stars {
 
 .stars_div {
 	margin-top:16px;
+}
+
+#bio_btn {
+	position:aboslute;
 }

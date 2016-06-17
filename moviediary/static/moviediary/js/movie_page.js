@@ -4,6 +4,12 @@ $(document).ready(function(){
 	
 	retrieveTMDBMovie(movie_id, function(data){
 		loadTMDBExtrasDiv($(".tmdb_extras"), data, true);
+		
+		if(movie_title == ""){
+			$("#title").html(data.title);
+			$("#release").html(data.release_date);
+			$(".movie_image img").attr("src", $(".movie_image img").attr("src")+data.poster_path)
+		}
 	})
 })
 

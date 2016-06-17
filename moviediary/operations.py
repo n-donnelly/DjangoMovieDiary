@@ -11,7 +11,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from moviediary.db_operations import getMovieWithTMDB_Id, getUserReviewForMovie, \
-    removeWishlist, getWishlistMovieForReviewer, getReviewsForMovie
+    removeWishlist, getWishlistMovieForReviewer, getReviewsForMovie,\
+    getLatestReviews, getMostWishlistedMovie
 from moviediary.models import Reviewer, Movie, Review, Wishlist, Following
 
 
@@ -79,6 +80,10 @@ def op_getReview(movie, reviewer):
         return r[0]         
     else:
         return "Error:User has not reviewed " + movie.title  
+
+#get recent reviews in general
+def op_getRecentReviews():
+    return getLatestReviews(6)
     
 #get recent reviews for movie
 def op_getMostRecentReviewsForMovie(movie):
@@ -126,6 +131,10 @@ def op_addMovieToWishlist(movie, reviewer):
 #delete the movie from the user's wishlist
 def op_removeMovieFromWishlist(movie, reviewer):
     removeWishlist(reviewer, movie)
+    
+#get top wishlisted movies
+def op_getTopWishlistedMovies():
+    return getMostWishlistedMovie()[:5]
     
 def op_addFollower(follower, followed):
     f = Following.objects.filter(follower=follower).filter(followed=followed)

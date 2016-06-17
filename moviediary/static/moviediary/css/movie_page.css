@@ -1,6 +1,6 @@
 .movie_info .movie_image {
 	float:left;
-	width:20%;
+	width:16em;
 	height:auto;
 	display:inline-block;
 	margin-right:1%;	
@@ -16,7 +16,7 @@ div.rev_stars {
 	border:0;
 	color:#ffd700;
 	padding:0px;
-	width:25%;
+	width:8em;
 }
 
 .details div.rev_stars {
@@ -46,6 +46,7 @@ div.rev_stars {
 	margin-right:0.5em;
 	display:inline-block;
 	width:10em;
+	font-weight:500;
 }
 
 .character {
@@ -56,6 +57,34 @@ div.rev_stars {
 	display:block;
 }
 
-.rev_extra {
-	margin-top:48px;
+#review_link {
+	float:right;
+}
+
+.cast_member {
+	width:28em;
+}
+
+.rec_rev_label {
+	font-weight:bold;
+	font-size:larger;
+}
+
+.movie_deets #release {
+	font-weight:bold;
+	font-size:large;
+}
+
+.reviews_div {
+	float:left;
+	margin-top:20px;
+	width:100%;
+}
+
+#cast_label {
+	float:left;
+}
+
+.star_label {
+	margin-top:8px;
 }
