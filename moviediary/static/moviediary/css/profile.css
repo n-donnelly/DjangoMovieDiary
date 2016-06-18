@@ -72,7 +72,7 @@ li {
 }
 
 li .review_view {
-	width:85%;
+	width:95%;
 }
 
 .movie_info .movie_image {
@@ -179,6 +179,25 @@ div.rev_stars {
 	margin-top:16px;
 }
 
+.profile_area_link div {
+	float:left;
+	display:block;
+	clear:both;
+	text-decoration:underline;
+}
+
+.profile_area_link div:hover {
+	color:blue;
+}
+
 #bio_btn {
-	position:aboslute;
+	float:right;
+	color:blue;
+	text-decoration:underline;
+	right:4em;
+}
+
+#bio_btn:hover {
+	color:rgb(160, 32, 240);
+	cursor:pointer;
 }

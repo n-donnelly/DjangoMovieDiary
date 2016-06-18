@@ -53,26 +53,18 @@ div.rev_stars {
 	font-size:large;
 }
 
-.rev_div {
-	width:40%;
-	display:inline-block;
-	background-color:whitesmoke;
-	border-radius:6px;
-	margin-right:4%;
-	margin-bottom:16px;
-}
-
-.rev_div {
-	width:30%;
+.movie_div {
+	width:22.5em;
 	display:inline-block;
 	background-color:whitesmoke;
 	border-radius:6px;
 	margin-right:2%;
 	height:160px;
 	float:left;
+	margin-bottom:16px;
 }
 
-.rev_div .movie_image {
+.movie_div .movie_image {
 	width:6em;
 	margin:8px;
 }
@@ -84,4 +76,9 @@ div.rev_stars {
 .area_headline {
 	font-weight:bold;
 	font-size:x-large;
+}
+
+.homepage_area {
+	float:left;
+	width:100%;
 }

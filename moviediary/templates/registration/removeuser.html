@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block css %}
+{% load staticfiles %}
+	
+{% endblock %}
+{% block title %}About Us{% endblock %}
+{% block  links %}
+	{% if user.is_authenticated %}
+		{% if user.username != reviewer.user.username %}
+			<span><a href="/moviediary/profile/{{ user.username }}/">Profile</a></span>
+		{% endif %}
+	{% endif %}
+{% endblock %}
+{% block content %}
+	<div id="wrapper">
+		<div id="header_container">
+		    <div id="header_left">
+		        <h1>Remove Account</h1>
+		    </div>
+		    <div class="clear"></div>
+		</div>
+		<div id="body_container">
+			<div id="about_div">
+				
+			</div>
+			<div id="tmdb_use">
+				
+			</div>
+			<div id="cookie_policy">
+				
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block scripts %}
+{% load staticfiles %}
+<script src="{% static 'moviediary/js/tmdb_loader.js' %}"></script>
+<script src="{% static 'moviediary/js/profile.js' %}"></script>
+{% endblock %}

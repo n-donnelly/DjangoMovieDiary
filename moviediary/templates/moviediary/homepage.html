@@ -12,22 +12,22 @@
 {% block content %}
 <div id="wrapper">
 	<div id="body_container">
-		<div id="latest_area">
+		<div id="latest_area" class="homepage_area">
 			<span class="area_headline">Latest Releases</span>
 			<div id="latest_releases_roll"></div>
 		</div>
 		
-		<div id="upcoming_area">
+		<div id="upcoming_area" class="homepage_area">
 			<span class="area_headline">Upcoming Releases</span>
 			<div id="upcoming_releases_roll"></div>
 		</div>
 		
 		{% if recent_reviews %}
-		<div id="recent_rev_area">
+		<div id="recent_rev_area" class="homepage_area">
 			<span class="area_headline">Recently Reviewed</span>
 			<div id="recently_reviewed">
 			{% for rev in recent_reviews %}
-				<div class="rev_div">
+				<div class="movie_div">
 					<div class='movie_image smaller_image'>
 					<a href="/moviediary/movie/{{ rev.movie.ext_id }}/">
 						<img src="http://image.tmdb.org/t/p/w500{{ rev.movie.image_url }}">
@@ -39,6 +39,7 @@
 						<a class="reviewer_username" href="/moviediary/profile/{{ rev.reviewer }}/">{{rev.reviewer}}</a>
 						<div class="rev_stars">{{rev.score}}</div>
 						<div class="rev_headline">{{rev.review_headline}}</div>
+						
 					</div>
 				</div>
 			{% endfor %}
@@ -46,11 +47,11 @@
 		</div>
 		{% endif %}
 		
-		<div id="wishlist_area">
+		<div id="wishlist_area" class="homepage_area">
 			<span class="area_headline">Most Wishlisted Movies</span>
 			<div id="recently_wishlisted">
 			{% for movie in top_wishlist %}
-				<div class="rev_div">
+				<div class="movie_div">
 					<div class='movie_image smaller_image'>
 					<a href="/moviediary/movie/{{ rev.movie.ext_id }}/">
 						<img src="http://image.tmdb.org/t/p/w500{{ movie.image_url }}">

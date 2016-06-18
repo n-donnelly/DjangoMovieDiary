@@ -46,9 +46,16 @@
 		</div>
 	</div>
 	{% block content %}{% endblock %}
+	<div id="footer">
     {% block footer %}
     <hr>
     {% endblock %}
+    <a href="/moviediary/aboutus/">About Us</a>
+    <div id="tmdb">
+    	<span id="tmdb_logo"><img src="/static/moviediary/images/tmdb_logo.png" alt="TMDd Logo"></span>
+    	<span id="tmdb_legal">Roger Mebert uses the TMDb API but is not endorsed or certified by TMDb.</span>
+    </div>
+    </div>
 </body>
   <script src="{%static 'moviediary/js/js.cookie.js' %}"></script>
   <script src="{% static 'moviediary/js/home.js' %}"></script>

@@ -5,13 +5,14 @@
 {% endblock %}
 {% block title %}{{reviewer.user.username}}'s Profile{% endblock %}
 {% block  links %}
-	<span><a href="/moviediary/">Homepage</a></span>
 	{% if user.is_authenticated %}
 		{% if user.username != reviewer.user.username %}
 			<span><a href="/moviediary/profile/{{ user.username }}/">Profile</a></span>
 		{% else %}
 			<span><a href="/moviediary/profile/{{ user.username }}/wishlist/">Wishlist</a></span>
 			<span><a href="/moviediary/profile/{{ user.username }}/reviews/">Reviews</a></span>
+			<span><a href="/moviediary/profile/{{ user.username }}/change_password_page/">Change Password</a></span>
+			<span><a href="/moviediary/profile/{{ user.username }}/remove_user_page/">Delete Account</a></span>
 		{% endif %}
 	{% endif %}
 {% endblock %}
@@ -123,7 +124,9 @@
 							</li>
 						{% endfor %}
 					</ul>
-					<a href="/moviediary/profile/{{ reviewer.user.username }}/wishlist/" class="profile_area_link">View Wishlist</a>
+					<a href="/moviediary/profile/{{ reviewer.user.username }}/wishlist/" class="profile_area_link">
+						<div>View Wishlist</div>
+					</a>
 				{% endif %}
 			</div>
 			
@@ -158,7 +161,9 @@
 					</li>
 				{% endfor %}
 				</ul>
-				<a href="/moviediary/profile/{{ reviewer.user.username }}/reviews/" class="profile_area_link">View All Reviews</a>
+				<a href="/moviediary/profile/{{ reviewer.user.username }}/reviews/" class="profile_area_link">
+					<div>View All Reviews</div>
+				</a>
 				{% endif %}
 			</div>
 			

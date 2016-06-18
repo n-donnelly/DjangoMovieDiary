@@ -4,6 +4,11 @@
 	<link rel="stylesheet" href="{% static 'moviediary/css/movie_page.css' %}">
 {% endblock %}
 {% block title %}{{ movie.title }}{% endblock %}
+{% block links %}
+	{% if user.is_authenticated %}
+		<a href="/moviediary/profile/{{ user.username }}/">Profile</a>
+	{% endif %}
+{% endblock %}
 {% block content %}
 <div id="wrapper">
 	<div id="header_container">
@@ -52,7 +57,9 @@
 						<div class="extras_div">
 							<a class="review_btn movie_action_btn">Review this Movie</a>
 							{% if not wishlist %}
-								<a class="wish_btn movie_action_btn">Add to Wishlist</a>
+								<a class="wish_btn movie_action_btn not_wished"></a>
+							{% else %}
+								<a class="wish_btn wished"></a>
 							{% endif %}
 						</div>
 					{% endif %}
@@ -76,7 +83,9 @@
 					<div class="extras_div">
 						<a class="review_btn movie_action_btn">Review this Movie</a>
 						{% if not wishlist %}
-							<a class="wish_btn movie_action_btn">Add to Wishlist</a>
+							<a class="wish_btn movie_action_btn not_wished"></a>
+						{% else %}
+							<a class="wish_btn wished"></a>
 						{% endif %}
 					</div>
 				{% endif %}
@@ -90,6 +99,7 @@
 	var movie_title = "{{movie.title}}";
 	var movie_release = "{{movie.release_date}}";
 	var movie_poster_url = "{{movie.image_url}}";
+	var tagline = "{{movie.tagline}}";
 </script>
 {% load staticfiles %}
 <script src="{% static 'moviediary/js/tmdb.js' %}"></script>

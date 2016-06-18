@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block css %}
+{% load staticfiles %}
+	
+{% endblock %}
+{% block title %}About Us{% endblock %}
+{% block  links %}
+	{% if user.is_authenticated %}
+		{% if user.username != reviewer.user.username %}
+			<span><a href="/moviediary/profile/{{ user.username }}/">Profile</a></span>
+		{% endif %}
+	{% endif %}
+{% endblock %}
+{% block content %}
+	<div id="wrapper">
+		<div id="header_container">
+		    <div id="header_left">
+		        <h1>About Us</h1>
+		    </div>
+		    <div class="clear"></div>
+		</div>
+		<div id="body_container">
+			<div id="about_div">
+				<h3>About Us</h3>
+				<p>This is a small website created by myself, Neil Donnelly that allows users to place movies on their wishlist and review them
+				for other users to see. It is not much more than a prototype and demo for possible employers, I do not aim to make any money form
+				 this or even advertise it. It is simply a pet project that I hope you enjoy and can make use of.
+				 <br>
+				 I named this Roger Mebert in tribute to the great film critic Roger Ebert. This is why I use the 4-star rating system rather 
+				 than the conventional 5-star system I hope with this site, for anyone who finds it can use 
+				 it as a means of recording their own thoughts and opinions on movies they've seen regardless of what anyone else thinks.</p>
+			</div>
+			<div id="tmdb_use">
+				<h3>Film Data</h3>
+				<p>Roger Mebert uses the TMDb API but is not endorsed or certified by TMDb.</p>
+			</div>
+			<div id="cookie_policy">
+				<h3>Cookie Policy</h3>
+				<p>This site uses cookies to make it a more user-friendly and helpful experience. The information collected in the cookies 
+				are not tracked or sold to any third parties.</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block scripts %}
+{% load staticfiles %}
+<script src="{% static 'moviediary/js/tmdb_loader.js' %}"></script>
+<script src="{% static 'moviediary/js/profile.js' %}"></script>
+{% endblock %}

@@ -80,51 +80,11 @@ function createResultsString(data, finished_callback) {
 
 function expandMovie(event) {
 	var movie_li = $(event.target).offsetParent();
-	var movie_index = movie_li.attr("id").split("_")[1];
-	var movie = current_movie_list[movie_index];
 	
 	if(movie_li.find(".extra_deets").length)
 		movie_li.find(".extra_deets").show("slow");
 	else {
-		extraStr = "<div class='extra_deets'><div class='tmdb_extras'></div><div class='mebert_extras'></div>";
-		if (is_user_auth) {
-			extraStr += "<a class='review_btn movie_action_btn'>Review this Movie</a>";
-			extraStr += "<a class='wish_btn movie_action_btn'>Add to Wishlist</a>";
-		}
-		extraStr += "</div>";
-		movie_li.children(":first").append(extraStr);
-		$.ajax({
-			type:'GET',
-			url:'/moviediary/get_movie_info/',
-			dataType:"json",
-			data:{
-				"movie_id":movie['id']
-			},
-			success: function (data) {
-				if(data['status'].startsWith("error"))
-					console.log("Movie not on the DB with id " + movie['id']);
-				else
-					if(data.review) {
-						movie_li.children(":first").find(".review_btn").hide();
-						movie_li.children(":first").find(".wish_btn").hide();
-					}
-					if(data.wishlist) {
-						movie_li.children(":first").find(".wish_btn").hide();
-					}
-					movie_li.children(":first").find(".mebert_extras").append(buildMebertsExtraString(data));
-					
-					var m_title = movie_li.find("#title").html();
-					var newTitleStr = "<a href='/moviediary/movie/"+movie['id']+"/'>" + m_title + "</a>";
-					movie_li.find("#title").html(newTitleStr);
-
-					loadStarsForOneDiv(movie_li.children(":first").find(".mebert_extras").find("#ave_star"));
-			}
-		})
-		
-		
-		retrieveTMDBMovie(movie['id'], function(data){
-			loadTMDBExtrasDiv(movie_li.children(":first").find(".tmdb_extras"), data, false)
-		})
+		buildExtraDivs(movie_li);
 	}
 	
 	movie_li.find(".movie_image").off("click");
@@ -133,10 +93,64 @@ function expandMovie(event) {
 	movie_li.find(".movie_deets").on("click", hideMovieExtras);
 }
 
+function buildExtraDivs(movie_li){
+
+	var movie_index = movie_li.attr("id").split("_")[1];
+	var movie = current_movie_list[movie_index];
+	
+	var extraStr = "<div class='extra_deets'><div class='tmdb_extras'></div><div class='mebert_extras'></div>";
+	if (is_user_auth) {
+		extraStr += "<a class='review_btn movie_action_btn'>Review this Movie</a>";
+		extraStr += "<a class='wish_btn movie_action_btn not_wished'></a>";
+	}
+	extraStr += "</div>";
+	movie_li.children(":first").append(extraStr);
+	
+	buildMebertExtrasDiv(movie_li, movie)
+	
+	retrieveTMDBMovie(movie['id'], function(data){
+		loadTMDBExtrasDiv(movie_li.children(":first").find(".tmdb_extras"), data, false);
+		current_movie_list[movie_index] = data;
+	})
+}
+
+function buildMebertExtrasDiv(movie_li, movie) {
+	$.ajax({
+		type:'GET',
+		url:'/moviediary/get_movie_info/',
+		dataType:"json",
+		data:{
+			"movie_id":movie['id']
+		},
+		success: function (data) {
+			if(data['status'].startsWith("error"))
+				console.log("Movie not on the DB with id " + movie['id']);
+			else {
+				if(data.review) {
+					movie_li.children(":first").find(".review_btn").hide();
+					movie_li.children(":first").find(".wish_btn").hide();
+				}
+				if(data.wishlist) {
+					movie_li.children(":first").find(".wish_btn").removeClass("not_wished");
+					movie_li.children(":first").find(".wish_btn").addClass("wished");
+				}
+				movie_li.children(":first").find(".mebert_extras").html(buildMebertsExtraString(data));
+				
+				var m_title = movie_li.find("#title").html();
+				var newTitleStr = "<a href='/moviediary/movie/"+movie['id']+"/'>" + m_title + "</a>";
+				movie_li.find("#title").html(newTitleStr);
+
+				loadStarsForOneDiv(movie_li.children(":first").find(".mebert_extras").find("#ave_star"));
+			}
+		}
+	})
+}
+
 function loadTMDBExtrasDiv(tmdbDiv, data, full_details) {
 	$(tmdbDiv).append(buildExtraDetailsString(data, full_details));
-	$(tmdbDiv).parent().find(".review_btn").on("click", loadForm);
-	$(tmdbDiv).parent().find(".wish_btn").on("click", addToWishlist);
+	$(tmdbDiv).offsetParent().find(".review_btn").on("click", loadForm);
+	$(tmdbDiv).offsetParent().find(".not_wished").on("click", addToWishlist);
+	$(tmdbDiv).offsetParent().find(".wished").on("click", removeFromWishlist);
 }
 
 function hideMovieExtras(event) {
@@ -152,11 +166,11 @@ function hideMovieExtras(event) {
 function buildMebertsExtraString(info) {
 	var mebertStr = "";
 	var arr = {
-			'Number of Reviews':info.movie.num_of_reviews
+			'Review Count':info.movie.num_of_reviews
 	}
 	mebertStr += buildExtrasString(arr);
 	
-	mebertStr += "<div class='extras_div'><span class='extras_label'>Average Score:</span><div class='rev_stars' id='ave_star'>" + info.movie.average_review_score + "</div>";
+	mebertStr += "<div class='extras_div'><div class='extras_label star_label'>Average Score:</div><div class='rev_stars' id='ave_star'>" + info.movie.average_review_score + "</div>";
 	
 	if(info.review) {
 		mebertStr += "<div class='extras_div'>" + buildReviewDiv(info.review, true) + "</div>";
@@ -279,23 +293,15 @@ function searchMovieTitle() {
 }
 
 function addToWishlist(event) {
-	var movie_id = $(event.target).parent().parent().parent().attr('id').split('_')[1];
+	var movie_id = $(event.target).offsetParent().attr('id').split('_')[1];
 	
 	var wishlistArr = {};
-	
-	//Get the tagline from the span
-	var tagline = "";
-	var tagDiv = $(event.target).parent().find(".tmdb_extras .extras_div")[0];
-	var tagLabel = $(tagDiv).find(".extras_label");
-	if ($(tagLabel).html().startsWith("Tagline")) {
-		var tagSpan = $(tagDiv).find(".extras_val");
-		tagline = $(tagSpan).html();
-	}
 	
 	var title = current_movie_list[movie_id].title;
 	var release = current_movie_list[movie_id].release_date;
 	var mov_id = current_movie_list[movie_id].id;
 	var img_url = current_movie_list[movie_id].poster_path;
+	var tagline = current_movie_list[movie_id].tagline;
 	
 	wishlistArr['csrfmiddlewaretoken'] = Cookies.get('csrftoken');
 	wishlistArr['tagline'] = tagline;
@@ -304,12 +310,45 @@ function addToWishlist(event) {
 	wishlistArr['movie_id'] = mov_id;
 	wishlistArr['poster_url'] = img_url;
 	
+	requestWishlist($(event.target), wishlistArr);
+}
+
+function removeFromWishlist(event) {
+	var movie_id = $(event.target).offsetParent().attr('id').split('_')[1];
+	
+	requestRemoveFromWishlist($(event.target), movie_id);
+}
+
+function requestWishlist(wish_div, wishlist) {
 	$.ajax({
 		type:'POST',
 		url:'/moviediary/add_movie_to_wishlist/',
-		data:wishlistArr,
+		data:wishlist,
 		success:function(data) {
-			$(event.target).html(data['wish_status']);
+			$(wish_div).removeClass("not_wished");
+			$(wish_div).addClass("wished");
+			$(wish_div).off("click");
+			$(wish_div).on("click", removeFromWishlist);
+		},
+		error: function(request, status, error) {
+			console.log("Something went wrong: " + request.responseText)
+		}
+	})
+}
+
+function requestRemoveFromWishlist(wish_div, m_id) {
+	dataArr = {};
+	dataArr['movie_id'] = m_id;
+	dataArr['csrfmiddlewaretoken'] = Cookies.get('csrftoken');
+	$.ajax({
+		type:'POST',
+		url:'/moviediary/remove_movie_from_wishlist/',
+		data:dataArr,
+		success:function(data) {
+			$(wish_div).removeClass("wished");
+			$(wish_div).addClass("not_wished");
+			$(wish_div).off("click");
+			$(wish_div).on("click", addToWishlist);
 		},
 		error: function(request, status, error) {
 			console.log("Something went wrong: " + request.responseText)

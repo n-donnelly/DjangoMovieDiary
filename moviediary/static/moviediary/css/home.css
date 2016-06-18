@@ -198,22 +198,43 @@ form p.error {
 
 a.review_btn {
 	float:right;
+	color:blue;
+	text-decoration:underline;
+	right:4em;
+}
+
+a.review_btn:hover {
+	color:rgb(160, 32, 240);
+	cursor:pointer;
 }
 
 a.wish_btn {	
 	top:28px;	
 	position:absolute;
+	right:4em;
 }
 
-a.movie_action_btn {
-	right:2em;
-	text-decoration:underline;
-	color:blue;
-	position:absolute;
+a.wish_btn:before {
+	content:"\f004";
+	font-size:2rem;
+	font-family: FontAwesome;
 }
 
-a.movie_action_btn:hover {
-	color:rgb(160, 32, 240);
+a.not_wished {
+	color:#4d4d4d;
+}
+
+a.not_wished:hover {
+	color:crimson;
+	cursor:pointer;
+}
+
+a.wished {
+	color:crimson;
+}
+
+a.wished:hover {
+	color:#4d4d4d;
 	cursor:pointer;
 }
 
@@ -298,4 +319,30 @@ a.movie_action_btn:hover {
 
 #navbar span {
 	display:inline-block;
+}
+
+.star_label {
+	margin-top:8px;
+}
+
+#tmdb {
+	float:right;
+}
+
+#tmdb span {
+	display:inline-block;
+}
+
+#tmdb_logo {
+	width:4em;
+}
+
+#tmdb_logo img {
+	width:100%;
+}
+
+#footer {
+	max-width:1170px;
+	position:relative;
+	margin:0 auto;
 }

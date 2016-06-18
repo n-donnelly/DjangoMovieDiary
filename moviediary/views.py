@@ -1,4 +1,5 @@
 #from django.shortcuts import render
+import json
 import re
 import time
 import types
@@ -18,7 +19,7 @@ from moviediary.operations import op_signup, op_addMovie, \
     op_removeMovieFromWishlist, op_addReview, op_addMovieToWishlist, op_getMovie, \
     op_getReview, op_isMovieWishlisted, op_fillTestData, \
     op_getMostRecentReviewsForMovie, op_normalizeMovieObject, \
-    op_normalizeReviewObject, op_updateReviewerProfile, op_getReviewsForMovie,\
+    op_normalizeReviewObject, op_updateReviewerProfile, op_getReviewsForMovie, \
     op_getRecentReviews, op_getTopWishlistedMovies
 
 
@@ -76,6 +77,38 @@ def logout_view(request):
     logout(request)
     context = {"user_status":"logged out"}
     return render(request, 'moviediary/homepage.html', context)
+
+def change_password_view(request, username=''):
+    if request.user.is_authenticated() and (username == request.user.username):
+        return render(request, 'registration/changepass.html')
+    else:
+        return render(request, 'registration/login.html')
+    
+def change_password(request):
+    if request.user.is_authenticated() and request.is_ajax():
+        if request.POST.get('new_pass'):
+            request.user.set_password(request.POST.get('new_pass'))
+            return JsonResponse({"status":"success"})
+        else:
+            return JsonResponse({"status":"failure - no password found"})
+    else:
+        raise Http404
+    
+def remove_user_view(request, username=''):
+    if request.user.is_authenticated() and (username == request.user.username):
+        return render(request, 'registration/removeuser.html')
+    else:
+        return render(request, 'registration/login.html')
+    
+def remove_user(request):
+    if request.user.is_authenticated() and request.is_ajax():
+        request.user.delete()
+        return JsonResponse({"status":"success"})
+    else:
+        raise Http404
+    
+def about_us(request):
+    return render(request, 'moviediary/aboutus.html')
 
 #TODO: Decide whether to take these out and move them to AJAX responses to reduce the 
 #up front load cost of all these DB queries - okay for now but won't scale particularly well
@@ -247,10 +280,32 @@ def add_movie_to_wishlist(request):
                 reviewer = get_object_or_404(Reviewer, user=request.user)
                 
                 m = op_addMovie(movie_title, release_date, movie_id, tagline, poster_url)
-                w = op_addMovieToWishlist(reviewer, m);
-                if w.startswith('Error'):
+                w = op_addMovieToWishlist(m,reviewer);
+                if isinstance(w, types.StringTypes):
                     return JsonResponse({"wish_status":w})
                 else:
+                    return JsonResponse({"wish_status":"success"});
+        errors['status'] = "Failed to add movie to user's wishlist";
+        return JsonResponse(errors);
+    else:
+        return JsonResponse({"wish_status":"Not logged in"});
+    
+#Remove movie from wishlist for user    
+def remove_movie_from_wishlist(request):
+    if request.user.is_authenticated():
+        errors = {}
+        errors['error'] = []
+        if request.method == 'POST' and request.is_ajax():
+            if not request.POST.get('movie_id'):
+                errors['error'].append('Invalid movie id')
+            if not errors['error']:
+                reviewer = get_object_or_404(Reviewer, user=request.user)
+                
+                m = op_getMovie(request.POST.get('movie_id'))
+                if isinstance(m, types.StringTypes):
+                    return JsonResponse({"wish_status":m})
+                else:
+                    op_removeMovieFromWishlist(m, reviewer);
                     return JsonResponse({"wish_status":"success"});
         errors['status'] = "Failed to add movie to user's wishlist";
         return JsonResponse(errors);
@@ -277,8 +332,8 @@ def get_movie_reviews(request, movie_id=0):
 def get_movie_info(request, movie_id=0):
     context = {}
     
-    m_id = request.GET.get('movie_id')
     if request.is_ajax():
+        m_id = request.GET.get('movie_id')
         m = op_getMovie(m_id)
         if type(m) is str:
             return JsonResponse({'status':'error - no movie found with ID'})
@@ -333,6 +388,31 @@ def get_movie_page(request, movie_id):
     context['movie'] = m;
     
     return render(request, 'moviediary/movie_page.html', context)
+
+def get_movie_ratings(request):
+    context = {}
+    
+    if request.is_ajax():
+        if request.GET.get('id_list'):
+            movie_ids = request.GET.get('id_list')
+            movie_ids = json.loads(movie_ids)
+            if len(movie_ids) > 0:
+                stars = [];
+                for m_id in movie_ids:
+                    m = op_getMovie(m_id)
+                    if isinstance(m, types.StringTypes):
+                        stars.append("")
+                    else:
+                        stars.append(m.average_review_score)
+                context['stars'] = stars
+                context['status'] = 'success'
+            else:
+                context['status']='error'
+        else:
+            context['status']='error'
+        return JsonResponse(context)
+    else:
+        return index(request);
 
 def add_test_data(request):
     if request.user.is_authenticated() and request.is_ajax():

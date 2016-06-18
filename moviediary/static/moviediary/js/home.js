@@ -15,7 +15,7 @@ function trySearch(){
 
 function loadStarsDiv(){
 	$(".rev_stars").each(function(i){
-		loadStarsForOneDiv(this)
+		loadStarsForOneDiv(this);
 	})
 }
 
