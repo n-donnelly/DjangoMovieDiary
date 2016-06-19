@@ -1,0 +1,10 @@
+.form_btn {
+	background-color:grey;
+	width:6em;
+	text-align:center;
+	padding:2px;
+}
+
+.form_btn:hover {
+	cursor:pointer;
+}

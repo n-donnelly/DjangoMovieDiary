@@ -3,11 +3,11 @@
 {% load staticfiles %}
 	
 {% endblock %}
-{% block title %}About Us{% endblock %}
+{% block title %}Remove User{% endblock %}
 {% block  links %}
 	{% if user.is_authenticated %}
 		{% if user.username != reviewer.user.username %}
-			<span><a href="/moviediary/profile/{{ user.username }}/">Profile</a></span>
+			<span><a href="/moviediary/profile/{{ request.user.username }}/">Profile</a></span>
 		{% endif %}
 	{% endif %}
 {% endblock %}
@@ -20,20 +20,21 @@
 		    <div class="clear"></div>
 		</div>
 		<div id="body_container">
-			<div id="about_div">
-				
-			</div>
-			<div id="tmdb_use">
-				
-			</div>
-			<div id="cookie_policy">
-				
-			</div>
+			<h3>Are you sure you want to remove your account?</h3>
+			<form id="remove_form" action="/moviediary/profile/{{request.user.username}}/remove_user/">
+				{% csrf_token %}
+				<h4>Please enter password to confirm</h4>
+				<input type="password" name="pass_input" id="pass_input">
+				<input type="submit" value="Confirm">
+				<div class="error"></div>
+			</form>
 		</div>
 	</div>
 {% endblock %}
 {% block scripts %}
+<script>
+var username = {{user.username}}
+</script>
 {% load staticfiles %}
-<script src="{% static 'moviediary/js/tmdb_loader.js' %}"></script>
-<script src="{% static 'moviediary/js/profile.js' %}"></script>
+<script src="{% static 'moviediary/js/account.js' %}"></script>
 {% endblock %}

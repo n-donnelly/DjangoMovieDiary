@@ -51,48 +51,48 @@ def search(request):
         context['search_title'] = request.GET.get("title")
     return render(request, 'moviediary/index.html', context)
 
-def signup(request, username, email, password):
-    #See if username exists, if so get salt add to password and hash and see if it matches hashed_password
-    return HttpResponse("Attempting to sign up with username: " + username)
-
 def register(request):
-    username = strip_tags(request.POST.get('username', ''))
-    password = strip_tags(request.POST.get('password', ''))
-    email = strip_tags(request.POST.get('email', ''))
-    
-    if((re.match("^[a-zA-Z0-9_.-]+$",username) is None) or 
-       User.objects.filter(username=username).exists() or
-       User.objects.filter(email=email).exists()):
-        context = Context({"error": "User already exists"})
-        return render(request, 'registration/login.html', context)
+    if request.is_ajax():
+        username = strip_tags(request.POST.get('username', ''))
+        password = strip_tags(request.POST.get('password', ''))
+        email = strip_tags(request.POST.get('email', ''))
         
-    user = User.objects.create_user(username=username,
-                                    email=email,
-                                    password = password)
-    
-    op_signup(user)
-    return render(request, 'moviediary/profile.html .movie_form')
+        context = {}
+        
+        if re.match("^[a-zA-Z0-9_.-]+$",username) is None:
+            context['status'] = "error"
+            context['reason'] = "Username invalid"
+            return JsonResponse( context)
+           
+        if User.objects.filter(username=username).exists():
+            context['status'] = "error"
+            context['reason'] = "Username already taken"
+            return JsonResponse( context)
+           
+        if User.objects.filter(email=email).exists():
+            context['status'] = "error"
+            context['reason'] = "Email already used"
+            return JsonResponse( context)
+        
+        if re.match("^[a-zA-Z0-9]{8,}", password) is None:
+            context['status'] = "error"
+            context['reason'] = "Password invalid - needs to be at least 8 alphanumeric characters"
+            return JsonResponse(context)
+            
+        user = User.objects.create_user(username=username,
+                                        email=email,
+                                        password = password)
+        
+        op_signup(user)
+        context['status'] = "success"
+        return JsonResponse(context)
+    else:
+        raise Http404
 
 def logout_view(request):
     logout(request)
     context = {"user_status":"logged out"}
     return render(request, 'moviediary/homepage.html', context)
-
-def change_password_view(request, username=''):
-    if request.user.is_authenticated() and (username == request.user.username):
-        return render(request, 'registration/changepass.html')
-    else:
-        return render(request, 'registration/login.html')
-    
-def change_password(request):
-    if request.user.is_authenticated() and request.is_ajax():
-        if request.POST.get('new_pass'):
-            request.user.set_password(request.POST.get('new_pass'))
-            return JsonResponse({"status":"success"})
-        else:
-            return JsonResponse({"status":"failure - no password found"})
-    else:
-        raise Http404
     
 def remove_user_view(request, username=''):
     if request.user.is_authenticated() and (username == request.user.username):
@@ -100,19 +100,29 @@ def remove_user_view(request, username=''):
     else:
         return render(request, 'registration/login.html')
     
-def remove_user(request):
-    if request.user.is_authenticated() and request.is_ajax():
-        request.user.delete()
-        return JsonResponse({"status":"success"})
+def remove_user(request, username=''):
+    if request.user.is_authenticated():
+        if request.is_ajax():
+            if (username == request.user.username):
+                if request.POST.get('pass_input'):
+                    pass_input = request.POST.get('pass_input')
+                    if request.user.check_password(pass_input):
+                        request.user.delete()
+                        return JsonResponse({"status":"success"})
+                    else:
+                        return JsonResponse({"status":"error","reason":"wrong password"})
+                else:
+                    return JsonResponse({"status":"error","reason":"variable not found"})
+            else:
+                return JsonResponse({"status":"error", "reason":"Not valid user"})
+        else:
+            return JsonResponse({"status":"error", "reason":"Invalid Entry"})
     else:
-        raise Http404
+        return JsonResponse({"status":"error", "reason":"Not logged in"})
     
 def about_us(request):
     return render(request, 'moviediary/aboutus.html')
 
-#TODO: Decide whether to take these out and move them to AJAX responses to reduce the 
-#up front load cost of all these DB queries - okay for now but won't scale particularly well
-#What's quicker - loads of DB calls up front or 3 different AJAX calls to fill in information
 def profile(request, username=''):
     context = {}
     

@@ -43,13 +43,10 @@ def op_signup(user):
     #check if username or email exist on DB already
     if user is None:
         return "User does not exist, cannot sign up"
-    #create a recovery token if the user forgets their password
-    recovery = uuid.uuid4().hex()
     
     #Creates user object for DB and saves
     r = Reviewer.objects.create(user=user, 
              num_of_reviews=0,
-             reset_token=recovery,
              profile_pic = profile_pics[random.randrange(19)])
     return r
     

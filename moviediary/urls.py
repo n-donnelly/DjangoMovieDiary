@@ -6,7 +6,7 @@ Created on 13 Mar 2016
 
 from django.conf.urls import url
 from . import views
-from django.contrib.auth.views import login
+from django.contrib.auth.views import login, password_change
 
 urlpatterns = [
     url(r'^$', views.index, name='homepage'),
@@ -15,13 +15,13 @@ urlpatterns = [
     url(r'^accounts/login/$', login),
     url(r'^accounts/logout/$', views.logout_view),
     url(r'^accounts/register/$', views.register, name='register'),
+    url(r'^accounts/password_change/$', password_change),
+    url(r'^accounts/password_change_done/$', views.index, name="password_change_done"),
     url(r'^profile/(?P<username>\w+)/$', views.profile, name='profile'),
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^profile/(?P<username>\w+)/profile_edit/$', views.edit_profile, name='profile_edit'),
     url(r'^profile/(?P<username>\w+)/remove_user_page/$', views.remove_user_view, name='remove_user_view'),
     url(r'^profile/(?P<username>\w+)/remove_user/$', views.remove_user, name='remove_user'),
-    url(r'^profile/(?P<username>\w+)/change_password_page/$', views.change_password_view, name='change_password_view'),
-    url(r'^profile/(?P<username>\w+)/change_password/$', views.change_password, name='change_password'),
     url(r'^profile/(?P<username>\w+)/reviews/$', views.profile_reviews, name='review_profiles'),    
     url(r'^profile/(?P<username>\w+)/reviews/(?P<page>[0-9]+)/$', views.profile_reviews, name='review_profiles'),
     url(r'^profile/(?P<username>\w+)/wishlist/$', views.profile_wishlist, name='wishlist'),
