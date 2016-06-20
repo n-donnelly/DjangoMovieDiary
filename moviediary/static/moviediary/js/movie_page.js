@@ -3,7 +3,9 @@ $(document).ready(function(){
 	loadStarsDiv()
 	
 	retrieveTMDBMovie(movie_id, function(data){
+		data = updateReleaseDateOnData(data);
 		loadTMDBExtrasDiv($(".tmdb_extras"), data, true);
+		$("#overview").html(data.overview);
 		
 		if(movie_title == ""){
 			$("#title").html(data.title);

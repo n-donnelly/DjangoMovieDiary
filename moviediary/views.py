@@ -1,4 +1,5 @@
 #from django.shortcuts import render
+import datetime
 import json
 import re
 import time
@@ -20,7 +21,9 @@ from moviediary.operations import op_signup, op_addMovie, \
     op_getReview, op_isMovieWishlisted, op_fillTestData, \
     op_getMostRecentReviewsForMovie, op_normalizeMovieObject, \
     op_normalizeReviewObject, op_updateReviewerProfile, op_getReviewsForMovie, \
-    op_getRecentReviews, op_getTopWishlistedMovies
+    op_getRecentReviews, op_getTopWishlistedMovies, \
+    op_getReviewsForReviewerByMonth, op_getWishlistedMoviesForReviewerByMonth,\
+    op_buildContextForCalendar
 
 
 def index(request):
@@ -430,3 +433,36 @@ def add_test_data(request):
         return JsonResponse({"status":"success"})
     else :
         raise Http404
+    
+def calendar(request, username=''):
+    context = {}
+    if request.user.is_authenticated():
+        if request.is_ajax() and request.GET.get('month') and request.GET.get('year'):
+            month = request.GET.get('month')
+            year = request.GET.get('year')
+        else:
+            date = datetime.datetime.now()
+            month = date.month
+            year = date.year
+            
+        if (username == '') or (username == request.user.username):
+            reviewer = get_object_or_404(Reviewer, user=request.user)
+        else:
+            try:
+                user = User.objects.get(username=username)
+            except:
+                raise Http404
+            reviewer = get_object_or_404(Reviewer, user=user)
+            
+        context = op_buildContextForCalendar(reviewer, month, year)
+        
+        if request.is_ajax():
+            return JsonResponse(context)
+        else:
+            return render(request, 'moviediary/calendar.html',context)
+    else:
+        if request.is_ajax():
+            return JsonResponse({"status":"error","reason":"User not authenticated"})
+        else:
+            return render(request, 'moviediary/login.html')   
+    

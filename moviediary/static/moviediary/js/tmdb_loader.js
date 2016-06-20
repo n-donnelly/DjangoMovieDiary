@@ -16,7 +16,7 @@ $(document).ready(function(){
 function retrieveTMDBMovie(id, callback) {
 	tmdb.call('/movie/' + id,
 		{
-			"append_to_response":"credits"
+			"append_to_response":"credits,release_dates"
 		},
 		callback)
 }
@@ -109,6 +109,7 @@ function buildExtraDivs(movie_li){
 	buildMebertExtrasDiv(movie_li, movie)
 	
 	retrieveTMDBMovie(movie['id'], function(data){
+		data = updateReleaseDateOnData(data);
 		loadTMDBExtrasDiv(movie_li.children(":first").find(".tmdb_extras"), data, false);
 		current_movie_list[movie_index] = data;
 	})
@@ -151,6 +152,16 @@ function loadTMDBExtrasDiv(tmdbDiv, data, full_details) {
 	$(tmdbDiv).offsetParent().find(".review_btn").on("click", loadForm);
 	$(tmdbDiv).offsetParent().find(".not_wished").on("click", addToWishlist);
 	$(tmdbDiv).offsetParent().find(".wished").on("click", removeFromWishlist);
+}
+
+function updateReleaseDateOnData(data) {
+	for(var i = 0; i < data.release_dates.results.length;i++) {
+		var rel_date = data.release_dates.results[i];
+		if(rel_date.iso_3166_1 == "GB")
+			data.release_date = rel_date.release_dates[0].release_date.split("T")[0];
+	}
+	$("#release").html(getDateString(new Date(data.release_date)));
+	return data;
 }
 
 function hideMovieExtras(event) {

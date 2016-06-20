@@ -27,7 +27,7 @@ body {
 }
 
 #header_container {
-    height: 80px;
+    height: 60px;
 }
 
 #body_container {
@@ -137,7 +137,7 @@ body {
 }
 
 #title {
-	font-size: 25px;
+	font-size: xx-large;
 	font-weight: 500;	
 	color:black;
 	text-decoration:none;

@@ -67,7 +67,7 @@ li {
 	margin-right:6%;
 }
 
-#wishlist_list li:nth-child(2) {
+#wishlist_list li:nth-child(even) {
 	margin-right:0%;
 }
 

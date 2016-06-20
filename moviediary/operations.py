@@ -3,6 +3,7 @@ Created on 2 Apr 2016
 
 @author: Neil Donnelly
 '''
+import json
 import random
 import time
 import uuid
@@ -11,8 +12,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from moviediary.db_operations import getMovieWithTMDB_Id, getUserReviewForMovie, \
-    removeWishlist, getWishlistMovieForReviewer, getReviewsForMovie,\
-    getLatestReviews, getMostWishlistedMovie
+    removeWishlist, getWishlistMovieForReviewer, getReviewsForMovie, \
+    getLatestReviews, getMostWishlistedMovie, getReviewsForReviewerByMonth, \
+    getWishlistedMoviesForReviewerByMonth
 from moviediary.models import Reviewer, Movie, Review, Wishlist, Following
 
 
@@ -149,7 +151,39 @@ def op_updateReviewerProfile(reviewer, bio, love_movies, fav_genres):
     reviewer.love_movie_text = love_movies
     reviewer.favourite_genres = fav_genres
     reviewer.save()
+    
+def op_getReviewsForReviewerByMonth(reviewer, month, year='2016'):
+    return getReviewsForReviewerByMonth(reviewer,month,year)
 
+def op_getWishlistedMoviesForReviewerByMonth(reviewer, month, year='2016'):
+    return getWishlistedMoviesForReviewerByMonth(reviewer,month,year)
+
+def op_buildContextForCalendar(reviewer,month,year):
+    context = {}
+    context['reviewer'] = op_normalizeReviewerObject(reviewer)
+    context['month'] = month
+    context['year'] = year
+    
+    mon_revs = []
+    reviews = op_getReviewsForReviewerByMonth(reviewer,month,year)
+    
+    for r in reviews:
+        mon_revs.append(op_normalizeReviewObject(r))
+    
+    if len(mon_revs) > 0:
+        context['reviewed_movies'] = json.dumps(mon_revs)
+        
+    mon_wish = []
+    wishlist = op_getWishlistedMoviesForReviewerByMonth(reviewer,month,year)
+    
+    for w in wishlist:
+        mon_wish.append(op_normalizeMovieObject(w.movie))
+        
+    if len(mon_wish) > 0:
+        context['wishlist_movies'] = json.dumps(mon_wish)
+        
+    return context;
+    
 def op_normalizeMovieObject(movie):
     m = {}
     m['title'] = movie.title
@@ -170,7 +204,7 @@ def op_normalizeReviewObject(review):
     r['reviewer'] = review.reviewer.user.username
     r['review_text'] = review.review_text
     r['review_headline'] = review.review_headline
-    r['review_date'] = review.review_date
+    r['review_date'] = review.review_date.strftime("%d %B %Y")
     return r
     
 def op_normalizeReviewerObject(reviewer):

@@ -64,6 +64,11 @@ def getLatestReviews(limit):
         return Review.objects.all().order_by('-review_date')
     return Review.objects.all().order_by('-review_date')[:limit]
 
+def getReviewsForReviewerByMonth(reviewer, month, year):
+    #SELECT * FROM Review JOIN Movie ON Movie.ID = Review.Movie_id 
+    #WHERE reviewer=reviewer AND Movie.release.month = month and Movie.release.year = year
+    return Review.objects.filter(reviewer=reviewer).filter(review_date__month=month).filter(review_date__year=year)
+
 def getReviewsFromFollowed(user):
     followeds = Following.objects.filter(follower=user).values('followed')
     return Review.objects.filter(reviewer__in=followeds).order_by('-review_date')[:5]
@@ -76,6 +81,9 @@ def getCountOfFollowedsForUser(user):
 
 def getWishlistMovieForReviewer(reviewer, movie):
     return Wishlist.objects.filter(reviewer=reviewer).filter(movie=movie)
+
+def getWishlistedMoviesForReviewerByMonth(reviewer, month, year):
+    return Wishlist.objects.filter(reviewer=reviewer).filter(movie__release_date__month=month).filter(movie__release_date__year=year)
 
 #remove wishlist that matches reviewer and Movie
 def removeWishlist(reviewer, movie):

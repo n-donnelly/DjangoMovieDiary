@@ -73,6 +73,7 @@ div.rev_stars {
 .movie_deets #release {
 	font-weight:bold;
 	font-size:large;
+	padding:5px;
 }
 
 .reviews_div {
@@ -83,4 +84,14 @@ div.rev_stars {
 
 #cast_label {
 	float:left;
+}
+
+#overview {
+	margin-top:5px;
+	padding:5px;
+}
+
+#title:hover {
+	text-decoration:none;
+	color:black;
 }

@@ -1,0 +1,129 @@
+#prev_month {
+	float:left;
+	width:5%;
+}
+
+#cal_header div.angle_month {
+	
+}
+
+#cal_header div.angle_month:hover {
+	background-color:lightgray;
+	cursor:pointer;
+}
+
+#prev_month:before {
+	content:"\f104";
+	font-family: FontAwesome;
+}
+
+#next_month {
+	float:right;
+	width:5%;
+}
+
+#next_month:before {
+	content:"\f105";
+	font-family: FontAwesome;
+}
+
+#cal_header div {
+	display:inline-block;
+	font-size:xx-large;
+	height:100%;
+	text-align:center;
+}
+
+#month_year_header {
+	width:90%;
+}
+
+#cal_header {
+	background-color:whitesmoke;
+	height:48px;
+	line-height:48px;
+}
+
+#cal_table {
+	width:100%;
+	table-layout:fixed;
+	min-width:1170px;
+}
+
+#cal_table tr th {
+	text-align:center;
+	font-size:large;
+	font-weight:500;
+	height:32px;
+	line-height:32px;
+	background-color:lightgray;
+}
+
+.hidden {
+	display:none;
+}
+
+.cal_day {
+	height:120px;
+	background-color:whitesmoke;
+	overflow:auto;
+}
+
+.movie_image {
+	width:3em;
+}
+
+div.rev_stars {
+	display:inline-block;
+	border:0;
+	color:#ffd700;
+	padding:0px;
+	width:5.5em;
+}
+
+.rev_stars span.star {
+	display:inline-block;
+	padding: 0;
+}
+
+.rev_stars span.star:before {
+	content: "\f005";
+	margin:0;
+	font-size: 1.2rem;
+	display:inline-block;
+	font-family: FontAwesome;
+	padding: .2rem .1rem;
+}
+
+.rev_stars span.half:before {
+	content: "\f089";
+	padding-right:0;
+}
+
+.day_content {
+	margin-left: 0.2em;
+}
+
+.movie_content {
+	float:left;
+	width:97%;
+	border-radius:4px;
+	margin:1px 1px 4px 1px;
+	text-decoration:none;
+}
+
+.review_content {
+	background-color:aquamarine;
+}
+
+.wish_content {
+	background-color:lightcoral;
+}
+
+.movie_title {
+	display:block;
+	width:90%;
+	margin:2px;
+	color:black;
+	font-weight:500;
+}

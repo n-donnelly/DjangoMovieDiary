@@ -6,7 +6,10 @@
 {% block title %}Movie Diary{% endblock %}
 {% block links %}
 	{% if user.is_authenticated %}
-		<a href="/moviediary/profile/{{ user.username }}/">Profile</a>
+		<span><a href="/moviediary/profile/{{ user.username }}/">Profile</a></span>
+		<span><a href="/moviediary/profile/{{ user.username }}/wishlist/">Wishlist</a></span>
+		<span><a href="/moviediary/profile/{{ user.username }}/reviews/">Reviews</a></span>
+		<span><a href="/moviediary/profile/{{ user.username }}/calendar/">Calendar</a></span>
 	{% else %}
 		<a href="/moviediary/accounts/login/">Login</a>
 	{% endif %}
