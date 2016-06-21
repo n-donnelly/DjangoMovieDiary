@@ -10,6 +10,8 @@
 		<span><a href="/moviediary/profile/{{ user.username }}/wishlist/">Wishlist</a></span>
 		<span><a href="/moviediary/profile/{{ user.username }}/reviews/">Reviews</a></span>
 		<span><a href="/moviediary/profile/{{ user.username }}/calendar/">Calendar</a></span>
+	{% else %}
+		<a href="/moviediary/accounts/login/">Login</a>
 	{% endif %}
 {% endblock %}
 {% block content %}
