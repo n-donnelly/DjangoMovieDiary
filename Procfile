@@ -1,1 +1,1 @@
-web: guncicorn RogerMebert.wsgi --log-file -
+web: gunicorn RogerMebert.wsgi --log-file -
