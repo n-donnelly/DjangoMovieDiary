@@ -82,7 +82,7 @@ function createTMDBDiv(movie){
 	mStr = "<div class='movie_div'>";
 	if(movie.poster_path != null){
 		mStr += "<div class='movie_image smaller_image'><a href='/moviediary/movie/" + movie.id + "/'>";
-		mStr += "<img src='http://image.tmdb.org/t/p/w500" + movie.poster_path + "'></a></div>"
+		mStr += "<img src='//image.tmdb.org/t/p/w500" + movie.poster_path + "'></a></div>"
 	}
 	mStr += "<div class='rev_details'><a class='movie_title' href='/moviediary/movie/" + movie.id + "/'>" + movie.title + "</a>";
 	mStr += "<span class='movie_release'>" + getDateString(new Date(movie.release_date)) + "</span>";
