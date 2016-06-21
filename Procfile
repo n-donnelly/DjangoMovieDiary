@@ -1,0 +1,1 @@
+web: guncicorn RogerMebert.wsgi --log-file -
