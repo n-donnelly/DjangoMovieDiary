@@ -4,6 +4,6 @@ gunicorn==19.6.0
 psycopg2==2.6.1
 py-mysql2pgsql==0.1.5
 pymongo==3.2.2
-PyYAML==5.1
+PyYAML==5.4
 virtualenv==15.0.2
 whitenoise==3.2
